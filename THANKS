@@ -1,0 +1,21 @@
+Iavor Veltchev <i_veltchev@yahoo.com>
+	Improved user interface with:
+	 GTK+ 2.x (gtktetris-0.6.2)
+	 GTK+ 1.2 (gtktetris-0.6.1)
+	Personal config files $HOME/.gtktetris
+	Common highscore file with more information in it
+
+David Necas <yeti@monoceros.physics.muni.cz>
+	Level speeds tuneing script
+	Suggested sgid games insted of suid games when installing binary
+
+Roel <roel_v@gmx.net>
+	Hide/Show next block
+	New score system (like on Gameboy)
+
+Jonathan Coles <jpcoles@mindless.com>
+	Drop block button
+	Various code improvments
+
+Kevin Glazier <striker99@mediaone.net>
+	Suggested start at level and start with blocks at bottom option.
