@@ -8,7 +8,7 @@
 
 void set_block(int x,int y,int color,int next)
 {
-	gdk_draw_pixmap((!next ? game_area->window : next_block_area->window),
+	gdk_draw_drawable((!next ? game_area->window : next_block_area->window),
 			(!next ? game_area->style->black_gc : next_block_area->style->black_gc),
 			blocks_pixmap,
 			color*BLOCK_WIDTH,0,
@@ -23,7 +23,7 @@ int do_random(int max)
 
 void set_label(GtkWidget *label,char *str)
 {
-	gtk_label_set(GTK_LABEL(label), str);
+	gtk_label_set_text (GTK_LABEL(label), str);
 }
 
 
@@ -41,7 +41,7 @@ void set_gtk_color_style(GtkWidget *w, long red, long green,  long blue)
 	gdk_color_alloc(colormap,&color);
 	memcpy(style->fg,&color,sizeof(GdkColor));
 	gtk_widget_set_style(w,style);
-	gtk_style_unref(style);
+	g_object_unref(style);
 	}
 
 void get_opt_file(char *buf, int len)
@@ -59,10 +59,10 @@ GtkWidget *label_box (GtkWidget *parent, GtkWidget *label, gchar *label_text)
 
          /* create box for label */
          box1 = gtk_hbox_new (FALSE, 0);
-         gtk_container_border_width (GTK_CONTAINER (box1), 2);
+         gtk_container_set_border_width (GTK_CONTAINER (box1), 2);
 
          /* create label for button */
-         gtk_label_set (GTK_LABEL(label), label_text);
+         gtk_label_set_text (GTK_LABEL(label), label_text);
 
          /* pack the label into the box */
          gtk_box_pack_start (GTK_BOX (box1), label, TRUE, TRUE, 3);
