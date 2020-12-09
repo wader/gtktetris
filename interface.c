@@ -576,9 +576,9 @@ int main(int argc,char *argv[])
   g_signal_connect ((gpointer) main_window, "key_press_event",
 		    G_CALLBACK (keyboard_event_handler),
 		    NULL);
-  g_signal_connect ((gpointer) main_window, "delete_event", G_CALLBACK (gtk_main_quit), NULL);
-  
-  
+  g_signal_connect (G_OBJECT (main_window), "destroy",
+                    G_CALLBACK (gtk_main_quit), NULL);
+
   // vertical box
   v_box = gtk_vbox_new(FALSE,0);
   gtk_container_add(GTK_CONTAINER(main_window),v_box);
@@ -636,9 +636,9 @@ int main(int argc,char *argv[])
   menu_game_quit = gtk_menu_item_new_with_mnemonic ("Quit");
   gtk_widget_show (menu_game_quit);
   gtk_container_add (GTK_CONTAINER (menu_game_menu), menu_game_quit);
-  g_signal_connect ((gpointer) menu_game_quit, "activate",
-		    G_CALLBACK (gtk_main_quit),
-		    NULL);
+  g_signal_connect_swapped (G_OBJECT (menu_game_quit), "activate",
+                            G_CALLBACK (gtk_widget_destroy),
+                            (gpointer) main_window);
   gtk_widget_add_accelerator(menu_game_quit,"activate", accel_group,
 			     GDK_X, GDK_CONTROL_MASK,
 			     GTK_ACCEL_VISIBLE);	
