@@ -161,8 +161,8 @@ int game_loop()
 {
 	if(!game_over)
 	{
-	  timer = gtk_timeout_add(level_speeds[current_level],
-				  (GtkFunction)game_loop,NULL);
+	  timer = g_timeout_add(level_speeds[current_level],
+				  (GSourceFunc)game_loop,NULL);
 	  move_down();
 	}
 	return FALSE;
@@ -188,13 +188,13 @@ void game_set_pause(GtkWidget    *menuitem,
     }
   game_pause = !game_pause;
   if(game_pause) {
-    gtk_timeout_remove(timer);
-    gtk_label_set(GTK_LABEL(Pause_button_label),pause_str[1]);
+    g_source_remove(timer);
+    gtk_label_set_text (GTK_LABEL(Pause_button_label),pause_str[1]);
   }
   else {
-    timer = gtk_timeout_add(level_speeds[current_level],
-			    (GtkFunction)game_loop,NULL);
-    gtk_label_set(GTK_LABEL(Pause_button_label),pause_str[0]);
+    timer = g_timeout_add(level_speeds[current_level],
+			    (GSourceFunc)game_loop,NULL);
+    gtk_label_set_text (GTK_LABEL(Pause_button_label),pause_str[0]);
   }
 }
 
@@ -224,16 +224,16 @@ void game_over_init()
 		next_block_area->allocation.width,
 		next_block_area->allocation.height);
 	game_set_pause(GTK_WIDGET(menu_game_pause),NULL);
-	gtk_label_set(GTK_LABEL(Start_stop_button_label),start_stop_str[0]);
+	gtk_label_set_text (GTK_LABEL(Start_stop_button_label),start_stop_str[0]);
 	gtk_widget_set_sensitive(menu_game_quick,TRUE);
 	gtk_widget_set_sensitive(menu_game_start,TRUE);
 	gtk_widget_set_sensitive(menu_game_stop,FALSE);
 	gtk_widget_set_sensitive(Start_stop_button,TRUE);
 	gtk_widget_grab_default(Start_stop_button);
-	gtk_label_set(GTK_LABEL(Pause_button_label),pause_str[0]);
+	gtk_label_set_text (GTK_LABEL(Pause_button_label),pause_str[0]);
 	gtk_widget_set_sensitive(Pause_button,FALSE);
 	
-	gtk_timeout_remove(timer);
+	g_source_remove(timer);
 }
 
 void game_start_stop(GtkMenuItem     *widget,
@@ -247,7 +247,7 @@ void game_start_stop(GtkMenuItem     *widget,
       gtk_widget_set_sensitive(menu_game_quick,FALSE);
       gtk_widget_set_sensitive(menu_game_start,FALSE);
       gtk_widget_set_sensitive(Start_stop_button,TRUE);
-      gtk_label_set(GTK_LABEL(Start_stop_button_label),start_stop_str[1]);
+      gtk_label_set_text (GTK_LABEL(Start_stop_button_label),start_stop_str[1]);
       gtk_widget_set_sensitive(Pause_button,TRUE);
       gtk_widget_grab_default(Pause_button);
       game_init();
@@ -256,7 +256,7 @@ void game_start_stop(GtkMenuItem     *widget,
       move_block(0,0,0);
       current_level = options.level;
       update_game_values(0,current_level,0);
-      timer = gtk_timeout_add(level_speeds[current_level],(GtkFunction)game_loop,NULL);
+      timer = g_timeout_add(level_speeds[current_level],(GSourceFunc)game_loop,NULL);
     }
   else
     game_over_init();
@@ -277,7 +277,7 @@ void show_about(GtkMenuItem     *menuitem,
 	gtk_window_set_title(GTK_WINDOW(about_window),"About");
 	gtk_window_set_policy(GTK_WINDOW(about_window),FALSE,FALSE,TRUE);
 	gtk_window_set_position(GTK_WINDOW(about_window),GTK_WIN_POS_CENTER);
-	gtk_container_border_width(GTK_CONTAINER(about_window),1);
+	gtk_container_set_border_width(GTK_CONTAINER(about_window),1);
 	
 	about_border = gtk_frame_new(NULL);
 	gtk_frame_set_shadow_type(GTK_FRAME(about_border),GTK_SHADOW_OUT);
@@ -297,7 +297,7 @@ void show_about(GtkMenuItem     *menuitem,
 			  G_CALLBACK (about_close),
 			  NULL);
 	gtk_box_pack_start(GTK_BOX(v_box),About_close_button,FALSE,TRUE,0);
-  	GTK_WIDGET_SET_FLAGS(About_close_button, GTK_CAN_DEFAULT);
+	gtk_widget_set_can_default (About_close_button, TRUE);
     	gtk_widget_grab_default(About_close_button);
 	
 	gtk_widget_show_all(about_window);
@@ -320,7 +320,7 @@ void show_help(GtkMenuItem     *menuitem,
 	gtk_window_set_title(GTK_WINDOW(help_window),"Help");
 	gtk_window_set_policy(GTK_WINDOW(help_window),FALSE,FALSE,TRUE);
 	gtk_window_set_position(GTK_WINDOW(help_window),GTK_WIN_POS_CENTER);
-	gtk_container_border_width(GTK_CONTAINER(help_window),1);
+	gtk_container_set_border_width(GTK_CONTAINER(help_window),1);
 	
 	help_border = gtk_frame_new(NULL);
 	gtk_frame_set_shadow_type(GTK_FRAME(help_border),GTK_SHADOW_OUT);
@@ -367,9 +367,8 @@ void show_help(GtkMenuItem     *menuitem,
 			  G_CALLBACK (help_close),
 			  NULL);
 	gtk_box_pack_start(GTK_BOX(vbox),Help_close_button,FALSE,TRUE,0);
-  	GTK_WIDGET_SET_FLAGS(Help_close_button, GTK_CAN_DEFAULT);
-    	gtk_widget_grab_default(Help_close_button);
-
+	gtk_widget_set_can_default (Help_close_button, TRUE);
+	gtk_widget_grab_default(Help_close_button);
 	
 	gtk_widget_show_all(help_window);
 }
@@ -396,7 +395,7 @@ void game_new_wrapper()
   gtk_widget_set_sensitive(menu_game_start,FALSE);
   gtk_widget_set_sensitive(menu_game_stop,TRUE);
   game_play=!game_play;
-  gtk_label_set(GTK_LABEL(Start_stop_button_label),start_stop_str[1]);
+  gtk_label_set_text (GTK_LABEL(Start_stop_button_label),start_stop_str[1]);
   gtk_widget_set_sensitive(Pause_button,TRUE);
   gtk_widget_grab_default(Pause_button);			 
   game_init();
@@ -405,7 +404,7 @@ void game_new_wrapper()
   move_block(0,0,0);
   current_level = options.level;
   update_game_values(0,current_level,0);
-  timer = gtk_timeout_add(level_speeds[current_level],(GtkFunction)game_loop,NULL);
+  timer = g_timeout_add(level_speeds[current_level],(GSourceFunc)game_loop,NULL);
   gtk_widget_hide(new_game_window);
 }
 
@@ -438,7 +437,7 @@ void show_new_game(GtkMenuItem     *menuitem,
   
   gtk_window_set_title(GTK_WINDOW(new_game_window),"Level settings");
   gtk_window_set_position(GTK_WINDOW(new_game_window),GTK_WIN_POS_CENTER);
-  gtk_container_border_width(GTK_CONTAINER(new_game_window),3);
+  gtk_container_set_border_width(GTK_CONTAINER(new_game_window),3);
   
   vbox = gtk_vbox_new(FALSE,2);
   gtk_container_add(GTK_CONTAINER(new_game_window),vbox);
@@ -476,7 +475,7 @@ void show_new_game(GtkMenuItem     *menuitem,
                     G_CALLBACK (game_new_wrapper),
                     NULL);
   gtk_box_pack_start(GTK_BOX(hbox),button,FALSE,TRUE,0);
-  GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
+  gtk_widget_set_can_default (button, TRUE);
   gtk_widget_grab_default (button);
   
   button1 = gtk_button_new_with_label("Accept");	
@@ -484,16 +483,16 @@ void show_new_game(GtkMenuItem     *menuitem,
                     G_CALLBACK (game_new_accept),
                     NULL);
   gtk_box_pack_start(GTK_BOX(hbox),button1,FALSE,TRUE,0);
-  GTK_WIDGET_SET_FLAGS (button1, GTK_CAN_DEFAULT);
+  gtk_widget_set_can_default (button1, TRUE);
   
   button2 = gtk_button_new_with_label("Close");	
   g_signal_connect ((gpointer) button2, "clicked",
                     G_CALLBACK (show_new_game_close),
                     GINT_TO_POINTER(TRUE));
   gtk_box_pack_start(GTK_BOX(hbox),button2,FALSE,TRUE,0);
-  GTK_WIDGET_SET_FLAGS (button2, GTK_CAN_DEFAULT);
+  gtk_widget_set_can_default (button2, TRUE);
   
-  gtk_widget_set_usize(new_game_window,220,130);
+  gtk_widget_set_size_request(new_game_window,220,130);
   gtk_widget_show_all(new_game_window);
   gtk_widget_set_sensitive(menu_game_start,FALSE);
   gtk_widget_set_sensitive(menu_game_quick,FALSE);
@@ -572,7 +571,6 @@ int main(int argc,char *argv[])
   srandom(time(NULL));
   //options.shw_nxt = TRUE;
   
-  gtk_set_locale();
   gtk_init(&argc,&argv);
 
   accel_group = gtk_accel_group_new();
@@ -700,7 +698,6 @@ int main(int argc,char *argv[])
   gtk_widget_show (menu_help);
   gtk_container_add (GTK_CONTAINER (menu_bar), menu_help);
   
-  gtk_menu_item_set_right_justified (GTK_MENU_ITEM(menu_help),TRUE);
   
   menu_help_menu = gtk_menu_new();
   gtk_menu_item_set_submenu (GTK_MENU_ITEM (menu_help), 
@@ -750,7 +747,7 @@ int main(int argc,char *argv[])
   // game_area
   game_area = gtk_drawing_area_new();
   gtk_widget_show(game_area);
-  gtk_drawing_area_size(GTK_DRAWING_AREA(game_area),
+  gtk_widget_set_size_request (GTK_WIDGET(game_area),
 			MAX_X*BLOCK_WIDTH,MAX_Y*BLOCK_HEIGHT);
   g_signal_connect ((gpointer) game_area, "expose_event",
 		    G_CALLBACK (game_area_expose_event),
@@ -773,7 +770,7 @@ int main(int argc,char *argv[])
   // next_block_area
   next_block_area = gtk_drawing_area_new();
   gtk_widget_show(next_block_area);
-  gtk_drawing_area_size(GTK_DRAWING_AREA(next_block_area),
+  gtk_widget_set_size_request (GTK_WIDGET(next_block_area),
 			4*BLOCK_WIDTH,4*BLOCK_HEIGHT);
   g_signal_connect ((gpointer) next_block_area, "expose_event",
 		    G_CALLBACK (next_block_area_expose_event),
@@ -828,7 +825,7 @@ int main(int argc,char *argv[])
   gtk_widget_show(box2);
   gtk_container_add (GTK_CONTAINER (Start_stop_button), box2);
   gtk_box_pack_start(GTK_BOX(right_side),Start_stop_button,FALSE,FALSE,3);
-  GTK_WIDGET_SET_FLAGS(Start_stop_button, GTK_CAN_DEFAULT);
+  gtk_widget_set_can_default (Start_stop_button, TRUE);
   gtk_widget_grab_default(Start_stop_button);
   //Pause
   Pause_button = gtk_button_new();
@@ -841,7 +838,7 @@ int main(int argc,char *argv[])
   gtk_widget_show(box1);
   gtk_container_add (GTK_CONTAINER (Pause_button), box1);
   gtk_box_pack_start(GTK_BOX(right_side),Pause_button,FALSE,FALSE,3);
-  GTK_WIDGET_SET_FLAGS(Pause_button, GTK_CAN_DEFAULT);
+  gtk_widget_set_can_default (Pause_button, TRUE);
   gtk_widget_set_sensitive(Pause_button,FALSE);
   
   gtk_window_add_accel_group (GTK_WINDOW (main_window), accel_group);

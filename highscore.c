@@ -67,12 +67,12 @@ void show_highscore(int place)
 	label = gtk_label_new(" # ");
 	gtk_widget_show(label);
 	gtk_table_attach_defaults(GTK_TABLE(table),label,0,1,0,1);
-	gtk_widget_set_usize(label,25,0);
+	gtk_widget_set_size_request(label,25,0);
 	
 	label = gtk_label_new(" Name: ");
 	gtk_widget_show(label);
 	gtk_table_attach_defaults(GTK_TABLE(table),label,1,2,0,1);
-	gtk_widget_set_usize(label,100,0);
+	gtk_widget_set_size_request(label,100,0);
 	
 	label = gtk_label_new(" Lines: ");
 	gtk_widget_show(label);
@@ -120,11 +120,11 @@ void show_highscore(int place)
 	}
 	
 	Highscore_close_button = gtk_button_new_with_label("Close");	
-	gtk_signal_connect(GTK_OBJECT(Highscore_close_button), "clicked",
-			   GTK_SIGNAL_FUNC(highscore_close), NULL);	
+	g_signal_connect (G_OBJECT(Highscore_close_button), "clicked",
+			   G_CALLBACK(highscore_close), NULL);	
 	gtk_box_pack_start(GTK_BOX(vbox),Highscore_close_button,FALSE,TRUE,0);
-  	GTK_WIDGET_SET_FLAGS(Highscore_close_button, GTK_CAN_DEFAULT);
-    	gtk_widget_grab_default(Highscore_close_button);
+	gtk_widget_set_can_default (Highscore_close_button, TRUE);
+	gtk_widget_grab_default(Highscore_close_button);
 
 	gtk_widget_show_all(highscore_window);
 }
