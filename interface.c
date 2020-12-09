@@ -25,6 +25,8 @@ int game_play;
 char options_f[100];
 char *pause_str[2]={"Pause\0","Resume\0"};
 char *start_stop_str[2]={"Start Game\0","Stop game\0"};
+GtkWidget * main_window;
+
 GtkWidget *score_label1;
 GtkWidget *score_label2;
 GtkWidget *level_label1;
@@ -263,45 +265,33 @@ void game_start_stop(GtkMenuItem     *widget,
     game_over_init();
 }
 
-void about_close(){
-  gtk_widget_hide(about_window);}
-
-void show_about(GtkMenuItem     *menuitem,
-		gpointer         user_data)
+void show_about(GtkMenuItem *menuitem, gpointer user_data)
 {
-        GtkWidget *About_close_button;
-	GtkWidget *about_label;
-	GtkWidget *about_border;
-	GtkWidget *v_box;
-	
-	about_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	gtk_window_set_title(GTK_WINDOW(about_window),"About");
-	gtk_window_set_policy(GTK_WINDOW(about_window),FALSE,FALSE,TRUE);
-	gtk_window_set_position(GTK_WINDOW(about_window),GTK_WIN_POS_CENTER);
-	gtk_container_border_width(GTK_CONTAINER(about_window),1);
-	
-	about_border = gtk_frame_new(NULL);
-	gtk_frame_set_shadow_type(GTK_FRAME(about_border),GTK_SHADOW_OUT);
-	gtk_container_add(GTK_CONTAINER(about_window),about_border);
-	
-	v_box = gtk_vbox_new(FALSE,0);
-	gtk_container_add(GTK_CONTAINER(about_border),v_box);
-		
-	about_label = gtk_label_new(	"\nJust another GTK Tetris v0.6.2\n\n"
-					"(c)1999,2000 Mattias Wadman\n\n"
-					"Modified by Iavor Veltchev, 2002-2006\n\n"
-					"This program is distributed under the terms of GPL.\n");
-	gtk_box_pack_start(GTK_BOX(v_box),about_label,FALSE,FALSE,0);
+    GtkWidget *w;
+    const gchar * authors[] =
+    {
+        "1999-2000 Mattias Wadman",
+        "2002-2006 Iavor Veltchev",
+        NULL
+    };
 
-	About_close_button = gtk_button_new_with_label("Close");	
-	g_signal_connect ((gpointer) About_close_button, "clicked",
-			  G_CALLBACK (about_close),
-			  NULL);
-	gtk_box_pack_start(GTK_BOX(v_box),About_close_button,FALSE,TRUE,0);
-  	GTK_WIDGET_SET_FLAGS(About_close_button, GTK_CAN_DEFAULT);
-    	gtk_widget_grab_default(About_close_button);
-	
-	gtk_widget_show_all(about_window);
+    w = g_object_new (GTK_TYPE_ABOUT_DIALOG,
+                      "version",      "v0.6.2",
+                      "program-name", "GTK Tetris",
+                      "copyright",    "Copyright (C) 1999-2020",
+                      "comments",     "Just another GTK Tetris",
+                      "license",      "This program is distributed under the terms of GPL.",
+                      "website",      "https://github.com/wader/gtktetris",
+                      "authors",      authors,
+                      NULL);
+    gtk_container_set_border_width (GTK_CONTAINER (w), 2);
+    gtk_window_set_transient_for (GTK_WINDOW (w), GTK_WINDOW (main_window));
+    gtk_window_set_modal (GTK_WINDOW (w), TRUE);
+    gtk_window_set_position (GTK_WINDOW (w), GTK_WIN_POS_CENTER_ON_PARENT);
+
+    g_signal_connect_swapped (w, "response",
+                              G_CALLBACK (gtk_widget_destroy), w);
+    gtk_widget_show_all (GTK_WIDGET (w));
 }
 
 
@@ -532,7 +522,6 @@ void read_options()
 int main(int argc,char *argv[])
 {
   char dmmy[20];
-  GtkWidget *main_window;
   GtkWidget *v_box;
   GtkWidget *h_box;
   GtkWidget *box1;
