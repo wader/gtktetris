@@ -9,6 +9,7 @@
 #include <gtk/gtk.h>
 
 #include "tetris.h"
+#include "tetris.xpm"
 
 #ifdef BIGBLOCKS
 #include "big_blocks.xpm"
@@ -255,7 +256,7 @@ void game_start_stop(GtkMenuItem     *widget,
       from_virtual();
       move_block(0,0,0);
       current_level = options.level;
-      update_game_values(0,current_level,0);
+      update_game_values();
       timer = gtk_timeout_add(level_speeds[current_level],(GtkFunction)game_loop,NULL);
     }
   else
@@ -382,7 +383,7 @@ void game_new_accept()
   current_level = options.level;
   gtk_widget_set_sensitive(menu_game_start,TRUE);
   gtk_widget_set_sensitive(menu_game_quick,TRUE);
-  update_game_values(0,current_level,0);
+  update_game_values();
   gtk_widget_hide(new_game_window);
 }
 
@@ -404,7 +405,6 @@ void game_new_wrapper()
   from_virtual();
   move_block(0,0,0);
   current_level = options.level;
-  update_game_values(0,current_level,0);
   timer = gtk_timeout_add(level_speeds[current_level],(GtkFunction)game_loop,NULL);
   gtk_widget_hide(new_game_window);
 }
@@ -577,13 +577,18 @@ int main(int argc,char *argv[])
 
   accel_group = gtk_accel_group_new();
   
+  GList *IconList=NULL;
+  IconList=g_list_append(IconList,
+			 gdk_pixbuf_new_from_xpm_data((gchar const **)tetris_xpm));
   // window
   main_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   gtk_window_set_policy(GTK_WINDOW(main_window),FALSE,FALSE,TRUE);
   gtk_window_set_title(GTK_WINDOW(main_window),"GTK Tetris");
+  gtk_window_set_icon_list(GTK_WINDOW(main_window),IconList);
   g_signal_connect ((gpointer) main_window, "key_press_event",
 		    G_CALLBACK (keyboard_event_handler),
 		    NULL);
+  g_signal_connect ((gpointer) main_window, "delete_event", G_CALLBACK (gtk_main_quit), NULL);
   
   
   // vertical box

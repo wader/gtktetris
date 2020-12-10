@@ -36,5 +36,6 @@ uninstall:
 	rm -i $(HIGHSCORE_FILE)
 	rmdir $(HIGHSCORE_PATH)
 
-dist:
-	-cd .. ; tar c gtktetris-0.5 | gzip -9 > gtktetris-0.5.tar.gz
+pack:	
+	rm -rf gtktetris.tgz
+	tar -czvf gtktetris.tgz *.c *.h *.xpm Makefile README THANKS ChangeLog

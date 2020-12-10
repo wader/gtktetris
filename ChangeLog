@@ -1,3 +1,7 @@
+Version 0.6.2b (March 2013) (Iavor Veltchev)
+* code cleanup in compliance with new compilers (still GTK+ 2.x)
+* icon added
+
 Version 0.6.2 (June 2006) (Iavor Veltchev)
 * GTK+ 2.x interface
 
