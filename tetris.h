@@ -78,11 +78,10 @@ void game_set_pause();
 // misc.c
 void set_block(int x,int y,int color,int next);
 int do_random(int max);
-void set_label(GtkWidget *label,char *str);
 void add_submenu(gchar *name,GtkWidget *menu,GtkWidget *menu_bar,int right);
 GtkWidget *add_menu_item(gchar *name,GCallback func,gpointer data,gint state,GtkWidget *menu);
 GtkWidget *add_menu_item_toggle(gchar *name,GCallback func,gpointer data,gint state,GtkWidget *menu);
-void set_gtk_color_style(GtkWidget *w, long red, long green,  long blue);
+void set_label_with_color (GtkWidget * w, char * color, char * text);
 void get_opt_file(char *buf, int len);
 GtkWidget *label_box (GtkWidget *parent, GtkWidget *label, gchar *label_text);
 

@@ -21,28 +21,14 @@ int do_random(int max)
 	return max*((float)random()/RAND_MAX);
 }
 
-void set_label(GtkWidget *label,char *str)
+void set_label_with_color (GtkWidget * w, char * color, char * text)
 {
-	gtk_label_set_text (GTK_LABEL(label), str);
+   char * markup;
+   markup = g_markup_printf_escaped ("<span foreground=\"%s\">%s</span>",
+                                     color, text);
+   gtk_label_set_markup (GTK_LABEL (w), markup);
+   g_free (markup);
 }
-
-
-void set_gtk_color_style(GtkWidget *w, long red, long green,  long blue)
-{
-	GtkStyle *style;
-	GdkColormap *colormap;
-	GdkColor color;
-
-	style = gtk_style_new();
-	colormap = gdk_colormap_get_system();
-	color.red = red;
-	color.green = green;
-	color.blue = blue;
-	gdk_color_alloc(colormap,&color);
-	memcpy(style->fg,&color,sizeof(GdkColor));
-	gtk_widget_set_style(w,style);
-	g_object_unref(style);
-	}
 
 void get_opt_file(char *buf, int len)
 {

@@ -97,7 +97,7 @@ void show_highscore(int place)
       		label = gtk_label_new(dummy);
 
 		if(place && place-1 == temp)
-		  set_gtk_color_style(label,0,0,0xffff);
+		  set_label_with_color (label, "blue", dummy);
 		gtk_table_attach_defaults(GTK_TABLE(table),label,1,2,temp+1,temp+2);
 		gtk_misc_set_alignment(GTK_MISC(label),0.5,0);
 
@@ -114,7 +114,7 @@ void show_highscore(int place)
 		sprintf(dummy,"%lu",highscore[temp].score);
 		label = gtk_label_new(dummy);
 		if(place && place-1 == temp)
-		  set_gtk_color_style(label,0xffff,0,0);
+		  set_label_with_color (label, "red", dummy);
 		gtk_table_attach_defaults(GTK_TABLE(table),label,4,5,temp+1,temp+2);
 		gtk_misc_set_alignment(GTK_MISC(label),1,0);
 	}
