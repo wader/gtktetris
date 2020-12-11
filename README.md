@@ -1,18 +1,20 @@
-## GTKTETRIS
+## GtkTetris
 
 A simple Tetris clone for the GTK library.
 
-## INSTALLATION
+## Requirements
 
-Edit the Makefile and make sure everything is set right. If you run X at a
-high resolution you may want to try to uncomment -DBIGBLOCKS in the
-Makefile and then recompile.
+## Installation
 
-If you need to recompile for your system type:
-make clean
-make
+Run
 
-To install binary:
-make install
+- ./autogen.sh
+- ./configure --prefix=/usr
+- make
+- make install
 
-The default install path is /usr/local/bin
+To build the GTK3 port (currently does not compile):
+
+- ./configure --prefix=/usr --enable-gtk3
+
+You can also just run the compiled binary: src/gtktetris.
