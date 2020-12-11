@@ -1,5 +1,5 @@
 /* XPM */
-static char * blocks_xpm[] = {
+static const char * blocks_xpm[] = {
 /* width height num_colors chars_per_pixel */
 "   264    33      197            2",
 /* colors */

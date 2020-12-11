@@ -1,5 +1,5 @@
 /* XPM */
-static char * tetris_xpm[] = {
+static const char * tetris_xpm[] = {
 "48 48 6 1",
 " 	c None",
 ".	c #000000",
