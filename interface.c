@@ -9,7 +9,7 @@
 #include <gtk/gtk.h>
 
 #include "tetris.h"
-#include "tetris.xpm"
+#include "tetris.xpm" /* tetris_xpm */
 
 #ifdef BIGBLOCKS
 #include "big_blocks.xpm"
@@ -267,13 +267,15 @@ void game_start_stop(GtkMenuItem     *widget,
 
 void show_about(GtkMenuItem *menuitem, gpointer user_data)
 {
-    GtkWidget *w;
+    GtkWidget * w;
+    GdkPixbuf * logo;
     const gchar * authors[] =
     {
         "1999-2000 Mattias Wadman",
         "2002-2006 Iavor Veltchev",
         NULL
     };
+    logo = gdk_pixbuf_new_from_xpm_data (tetris_xpm);
 
     w = g_object_new (GTK_TYPE_ABOUT_DIALOG,
                       "version",      "v0.6.2",
@@ -283,6 +285,7 @@ void show_about(GtkMenuItem *menuitem, gpointer user_data)
                       "license",      "This program is distributed under the terms of GPL.",
                       "website",      "https://github.com/wader/gtktetris",
                       "authors",      authors,
+                      "logo",         logo,
                       NULL);
     gtk_container_set_border_width (GTK_CONTAINER (w), 2);
     gtk_window_set_transient_for (GTK_WINDOW (w), GTK_WINDOW (main_window));
