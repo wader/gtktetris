@@ -8,12 +8,14 @@
 
 void set_block(int x,int y,int color,int next)
 {
-	gdk_draw_drawable((!next ? game_area->window : next_block_area->window),
-			(!next ? game_area->style->black_gc : next_block_area->style->black_gc),
-			blocks_pixmap,
-			color*BLOCK_WIDTH,0,
-			x*BLOCK_WIDTH,y*BLOCK_HEIGHT,
-			BLOCK_WIDTH,BLOCK_HEIGHT);
+	gdk_draw_pixbuf (
+			(!next ? gtk_widget_get_window (game_area) : gtk_widget_get_window (next_block_area)),
+			NULL,
+			blocks_pixbuf,        /* pixbuf */
+			color*BLOCK_WIDTH, 0, /* src_x, src_y */
+			x*BLOCK_WIDTH,     y*BLOCK_HEIGHT, /* dest_x, dest_y */
+			BLOCK_WIDTH,       BLOCK_HEIGHT,   /* width,  height */
+			0,0,0);
 }
 
 int do_random(int max)

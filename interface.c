@@ -550,7 +550,6 @@ int main(int argc,char *argv[])
   GtkWidget *right_side;
   GtkWidget *game_border;	
   GtkWidget *next_block_border;
-  GdkBitmap *mask;	
   GtkWidget *menu_bar;
   GtkWidget *menu_game;
   GtkWidget *menu_game_menu;
@@ -862,10 +861,7 @@ int main(int argc,char *argv[])
   gtk_widget_show(main_window);
   
   // Block images...
-  blocks_pixmap = gdk_pixmap_create_from_xpm_d(game_area->window,
-					       &mask,
-					       NULL,
-					       (gchar **)blocks_xpm);	
+  blocks_pixbuf = gdk_pixbuf_new_from_xpm_data (blocks_xpm);
   
   gtk_main ();
   return 0;

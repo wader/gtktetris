@@ -32,7 +32,7 @@
 // global variables
 GtkWidget *game_area;
 GtkWidget *next_block_area;
-GdkPixmap *blocks_pixmap;
+GdkPixbuf *blocks_pixbuf;
 int game_over;
 int game_pause;
 int current_x;
