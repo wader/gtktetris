@@ -273,6 +273,7 @@ void show_about(GtkMenuItem *menuitem, gpointer user_data)
     {
         "1999-2000 Mattias Wadman",
         "2002-2006 Iavor Veltchev",
+        "2020      wdlkmpx (github)",
         NULL
     };
     logo = gdk_pixbuf_new_from_xpm_data (tetris_xpm);
