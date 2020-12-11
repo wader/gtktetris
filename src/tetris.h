@@ -11,18 +11,8 @@
 #define MAX_X 10
 #define MAX_Y 18
 
-#ifdef BIGBLOCKS
-#define BLOCK_WIDTH 22
-#define BLOCK_HEIGHT 22
-#else
-#ifdef BIGGERBLOCKS
-#define BLOCK_WIDTH 33
-#define BLOCK_HEIGHT 33
-#else
-#define BLOCK_WIDTH 15
-#define BLOCK_HEIGHT 15
-#endif
-#endif
+extern int BLOCK_WIDTH;
+extern int BLOCK_HEIGHT;
 
 #define NUM_LEVELS 20
 #define NUM_HIGHSCORE 10

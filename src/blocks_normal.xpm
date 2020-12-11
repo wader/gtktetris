@@ -1,5 +1,5 @@
 /* XPM */
-static const char * blocks_xpm[] = {
+static const char * blocks_xpm_normal[] = {
 "176 22 198 2",
 "  	c None",
 ". 	c #000000",

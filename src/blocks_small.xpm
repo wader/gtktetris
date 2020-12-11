@@ -1,5 +1,5 @@
 /* XPM */
-static const char * blocks_xpm[] = {
+static const char * blocks_xpm_tiny[] = {
 "120 15 606 2",
 "  	c None",
 ". 	c #000000",

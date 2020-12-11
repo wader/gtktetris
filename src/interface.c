@@ -12,15 +12,12 @@
 #include "tetris.xpm" /* tetris_xpm */
 #define OPTIONS_FILE "config"
 
-#ifdef BIGBLOCKS
-#include "big_blocks.xpm"
-#else
-#ifdef BIGGERBLOCKS
-#include "bbig_blocks.xpm"
-#else
-#include "blocks.xpm"
-#endif
-#endif
+#include "blocks_small.xpm"
+#include "blocks_normal.xpm"
+#include "blocks_big.xpm"
+const char ** blocks_xpm;
+int BLOCK_WIDTH;
+int BLOCK_HEIGHT;
 
 int game_play;
 char options_f[100];
@@ -576,6 +573,17 @@ int main(int argc,char *argv[])
   }
   g_free (config_dir);
 
+  // set Block (tetromino) images size...
+  blocks_xpm = blocks_xpm_normal;
+  if (blocks_xpm == blocks_xpm_tiny) {
+     BLOCK_WIDTH = BLOCK_HEIGHT = 15;
+  } else if (blocks_xpm == blocks_xpm_normal) {
+     BLOCK_WIDTH = BLOCK_HEIGHT = 22;
+  } else if (blocks_xpm == blocks_xpm_big) {
+     BLOCK_WIDTH = BLOCK_HEIGHT = 33;
+  }
+  blocks_pixbuf = gdk_pixbuf_new_from_xpm_data (blocks_xpm);
+
   //init game values
   game_play=FALSE;
   read_options();
@@ -868,9 +876,6 @@ int main(int argc,char *argv[])
   gtk_window_add_accel_group (GTK_WINDOW (main_window), accel_group);
   
   gtk_widget_show(main_window);
-  
-  // Block images...
-  blocks_pixbuf = gdk_pixbuf_new_from_xpm_data (blocks_xpm);
   
   gtk_main ();
   return 0;
