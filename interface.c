@@ -300,7 +300,7 @@ void show_about(GtkMenuItem *menuitem, gpointer user_data)
                       "program-name", "GTK Tetris",
                       "copyright",    "Copyright (C) 1999-2020",
                       "comments",     "Just another GTK Tetris",
-                      "license",      "This program is distributed under the terms of GPL.",
+                      "license",      "MIT - Permission is hereby granted, free of charge, \nto any person obtaining a copy of this software \nand associated documentation files (the \"Software\"), \nto deal in the Software without restriction, \nincluding without limitation the rights to use, \ncopy, modify, merge, publish, distribute, sublicense, \nand/or sell copies of the Software.... \n\nsee LICENSE file",
                       "website",      "https://github.com/wader/gtktetris",
                       "authors",      authors,
                       "logo",         logo,
