@@ -26,6 +26,7 @@ char options_f[100];
 char *pause_str[2]={"Pause\0","Resume\0"};
 char *start_stop_str[2]={"Start Game\0","Stop game\0"};
 GtkWidget * main_window;
+GdkColor color_black = { 0, 0, 0, 0 };
 
 GtkWidget *score_label1;
 GtkWidget *score_label2;
@@ -136,12 +137,17 @@ gint game_area_expose_event(GtkWidget       *widget,
       move_block(0,0,0); 
     }
   else
-    gdk_draw_rectangle(widget->window,
-		       widget->style->black_gc,
-		       TRUE,
-		       0,0,
-		       widget->allocation.width,
-		       widget->allocation.height);
+    {
+      cairo_t *cr;
+      cr = gdk_cairo_create (gtk_widget_get_window (widget));
+      gdk_cairo_set_source_color (cr, &color_black);
+      cairo_rectangle (cr,
+                       0, 0,
+                       widget->allocation.width,
+                       widget->allocation.height);
+      cairo_fill (cr);
+      cairo_destroy (cr);
+    }
   return FALSE;
 }
 
@@ -149,12 +155,16 @@ gboolean next_block_area_expose_event(GtkWidget       *widget,
 				      GdkEventExpose  *event,
 				      gpointer         user_data)
 {
-	gdk_draw_rectangle(widget->window,
-		widget->style->black_gc,
-		TRUE,
-		0,0,
-		widget->allocation.width,
-		widget->allocation.height);
+	cairo_t *cr;
+	cr = gdk_cairo_create (gtk_widget_get_window (widget));
+	gdk_cairo_set_source_color (cr, &color_black);
+	cairo_rectangle (cr,
+	                 0, 0,
+	                 widget->allocation.width,
+	                 widget->allocation.height);
+	cairo_fill (cr);
+	cairo_destroy (cr);
+
 	if(!game_over && options.shw_nxt)
 		draw_block(0,0,next_block,next_frame,FALSE,TRUE);
 	return FALSE;
@@ -213,19 +223,26 @@ void game_over_init()
 	
 	game_over = TRUE;
 	game_play = FALSE;
-	gdk_draw_rectangle(game_area->window,
-		game_area->style->black_gc,
-		TRUE,
-		0,0,
-		game_area->allocation.width,
-		game_area->allocation.height);
 
-	gdk_draw_rectangle(next_block_area->window,
-		next_block_area->style->black_gc,
-		TRUE,
-		0,0,
-		next_block_area->allocation.width,
-		next_block_area->allocation.height);
+	cairo_t *cr;
+	cr = gdk_cairo_create (gtk_widget_get_window (game_area));
+	gdk_cairo_set_source_color (cr, &color_black);
+	cairo_rectangle (cr,
+	                 0, 0,
+	                 game_area->allocation.width,
+	                 game_area->allocation.height);
+	cairo_fill (cr);
+	cairo_destroy (cr);
+
+	cr = gdk_cairo_create (gtk_widget_get_window (next_block_area));
+	gdk_cairo_set_source_color (cr, &color_black);
+	cairo_rectangle (cr,
+	                 0, 0,
+	                 next_block_area->allocation.width,
+	                 next_block_area->allocation.height);
+	cairo_fill (cr);
+	cairo_destroy (cr);
+
 	game_set_pause(GTK_WIDGET(menu_game_pause),NULL);
 	gtk_label_set_text (GTK_LABEL(Start_stop_button_label),start_stop_str[0]);
 	gtk_widget_set_sensitive(menu_game_quick,TRUE);
