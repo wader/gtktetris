@@ -1,10 +1,11 @@
 #include <stdlib.h>
 #include <unistd.h>
-#include <pwd.h>
 #include <sys/types.h>
 #include <string.h>
 
 #include "tetris.h"
+
+#define EMPTY_STRING ""
 
 void set_block(int x,int y,int color,int next)
 {
@@ -32,14 +33,26 @@ void set_label_with_color (GtkWidget * w, char * color, char * text)
    g_free (markup);
 }
 
-void get_opt_file(char *buf, int len)
+/* returns a path that must be freed with g_free) */
+char * get_config_dir_file (const char * file)
 {
-  struct passwd *pw;
-
-  pw = getpwuid(getuid());
-  strcpy(buf,pw->pw_dir);
-  strcat(buf,"/.gtktetris\0");
+   char * config_home = NULL;
+   char * res = NULL;
+   config_home = getenv ("XDG_CONFIG_HOME");
+   if (!config_home) {
+      config_home = getenv ("HOME");
+      if (!config_home) {
+         config_home = EMPTY_STRING;
+      }
+   }
+   if (file) {
+      res = g_strconcat (config_home, "/gtktetris/", file, NULL);
+   } else {
+      res = g_strconcat (config_home, "/gtktetris", NULL);
+   }
+   return (res);
 }
+
 
 GtkWidget *label_box (GtkWidget *parent, GtkWidget *label, gchar *label_text)
      {

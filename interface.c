@@ -10,6 +10,7 @@
 
 #include "tetris.h"
 #include "tetris.xpm" /* tetris_xpm */
+#define OPTIONS_FILE "config"
 
 #ifdef BIGBLOCKS
 #include "big_blocks.xpm"
@@ -521,22 +522,25 @@ void save_options(GtkMenuItem     *menuitem,
 		  gpointer         user_data)
 {
   FILE *fp;
-  if(!(fp = fopen(options_f,"wb"))){
+  char * options_f = get_config_dir_file (OPTIONS_FILE);
+  if ((fp = fopen (options_f,"wb"))) {
+     fwrite (&options,1,sizeof(options),fp);
+     fclose (fp);
+  } else
     printf("gtktetris: Write ERROR!\n");
-    return;}
-    
-  fwrite(&options,1,sizeof(options),fp);
-  fclose(fp);
+   g_free (options_f);
 }
 
 void read_options()
 {	
   FILE *fp;
-  if((fp = fopen(options_f,"rb")))
+  char * options_f = get_config_dir_file (OPTIONS_FILE);
+  if ((fp = fopen (options_f,"rb")))
     {
       fread(&options,1,sizeof(options),fp);
       fclose(fp);
     }
+  g_free (options_f);
 }
 
 
@@ -564,11 +568,16 @@ int main(int argc,char *argv[])
   GtkWidget *separator2;
   GtkWidget *about1;
   GtkAccelGroup* accel_group;
-  
+
+  // make sure config dir exists
+  char * config_dir = get_config_dir_file (NULL);
+  if (access (config_dir, F_OK) != 0) {
+     mkdir (config_dir, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+  }
+  g_free (config_dir);
 
   //init game values
   game_play=FALSE;
-  get_opt_file(options_f,100);
   read_options();
   game_over = TRUE;
   game_pause = FALSE;

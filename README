@@ -1,4 +1,4 @@
-Just another GTK Tetris (c)1999,2000 Mattias Wadman <napolium@sudac.org>
+Just another GTK Tetris
 
 INTRODUCTION
 ------------
@@ -7,35 +7,20 @@ for fun and to learn how to use GTK. If you have any questions, suggestions
 or you want to tell me your highscore, feel free to contact me. It's
 always nice to know that someone is useing the software :)
 
-For new versions and other programs written by me, go to:
-http://www.sudac.org/~napolium/linux/
-
-
 INSTALLATION
 ------------
 Edit the Makefile and make sure everything is set right. If you run X at a
 high resolution you may want to try to uncomment -DBIGBLOCKS in the
 Makefile and then recompile.
 
-Note: The source was written to work on Linux systems, but I have compiled
-      it sucessfully on a FreeBSD 3.2 system too. So it should work on most
-      system capable of compiling GTK.
-
 If you need to recompile for your system type:
 make clean
 make
 
-Note: Root access is required if installing in the default directory.
-      Install will overwrite your old highscore file.
-
-To install binary and highscore file type:
+To install binary:
 make install
 
-Note: The binary will be set to sgid games as default so it will
-      be able to write to the highscore file.
-
 The default install path is /usr/local/bin
-The default highscore path is /usr/local/share/gtktetris
 
 Have fun.
 -Mattias

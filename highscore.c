@@ -19,20 +19,24 @@ struct item highscore[NUM_HIGHSCORE];
 void read_highscore()
 {
   FILE *fp;
-  if((fp = fopen(HIGHSCORE_FILE,"r")))
+  char * hfile = get_config_dir_file ("highscore.dat");
+  if ((fp = fopen (hfile,"r")))
     {
       fread(&highscore,1,sizeof(highscore),fp);
       fclose(fp);
     }
+  g_free (hfile);
 }
 
 void write_highscore()
 {
   FILE *fp;
-  if(!(fp = fopen(HIGHSCORE_FILE,"w")))
-    return;
-  fwrite(&highscore,1,sizeof(highscore),fp);
-  fclose(fp);
+  char * hfile = get_config_dir_file ("highscore.dat");
+  if ((fp = fopen (hfile,"w"))) {
+     fwrite(&highscore,1,sizeof(highscore),fp);
+     fclose(fp);
+  }
+  g_free (hfile);
 }
 
 void highscore_close(){
