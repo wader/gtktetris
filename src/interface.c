@@ -49,7 +49,6 @@ GtkWidget *Start_stop_button;
 GtkWidget *Start_stop_button_label;
 GtkWidget *Pause_button;
 GtkWidget *Pause_button_label;
-GtkWidget *help_window;
 GtkWidget *about_window;
 gint timer;
 
@@ -302,31 +301,31 @@ void show_about(GtkMenuItem *menuitem, gpointer user_data)
     gtk_widget_show_all (GTK_WIDGET (w));
 }
 
-
-void help_close(){
-  gtk_widget_hide(help_window);}
-
 void show_help(GtkMenuItem     *menuitem,
 	       gpointer         user_data)
 {
-        GtkWidget *Help_close_button;
-	GtkWidget *help_label;
-	GtkWidget *help_border;
+	GtkWidget *dialog, * help_label, * button;
+	GtkWidget *frame;
 	GtkWidget *hbox;
 	GtkWidget *vbox;
 
-	help_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	gtk_window_set_title(GTK_WINDOW(help_window),"Help");
-	gtk_window_set_policy(GTK_WINDOW(help_window),FALSE,FALSE,TRUE);
-	gtk_window_set_position(GTK_WINDOW(help_window),GTK_WIN_POS_CENTER);
-	gtk_container_set_border_width(GTK_CONTAINER(help_window),1);
+	dialog = gtk_dialog_new ();
+	gtk_window_set_title (GTK_WINDOW (dialog), "Help");
+	gtk_window_set_transient_for (GTK_WINDOW (dialog), GTK_WINDOW (main_window));
+	gtk_window_set_position (GTK_WINDOW (dialog), GTK_WIN_POS_CENTER_ON_PARENT);
+	gtk_window_set_modal (GTK_WINDOW (dialog), TRUE);
+	gtk_window_set_resizable (GTK_WINDOW (dialog), FALSE);
+	gtk_window_set_skip_pager_hint (GTK_WINDOW (dialog), TRUE);
+	gtk_window_set_skip_taskbar_hint (GTK_WINDOW (dialog), TRUE);
+	gtk_container_set_border_width (GTK_CONTAINER (dialog), 3);
 	
-	help_border = gtk_frame_new(NULL);
-	gtk_frame_set_shadow_type(GTK_FRAME(help_border),GTK_SHADOW_OUT);
-	gtk_container_add(GTK_CONTAINER(help_window),help_border);
+	vbox = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
+
+	frame = gtk_frame_new (NULL);
+	gtk_box_pack_start (GTK_BOX (vbox), frame, TRUE, TRUE, 0);
 
 	vbox = gtk_vbox_new(FALSE,3);
-	gtk_container_add(GTK_CONTAINER(help_border),vbox);
+	gtk_container_add (GTK_CONTAINER (frame),vbox);
 
 	hbox = gtk_hbox_new(FALSE,30);
 	gtk_container_add(GTK_CONTAINER(vbox),hbox);
@@ -361,15 +360,14 @@ void show_help(GtkMenuItem     *menuitem,
 	gtk_label_set_justify(GTK_LABEL(help_label),GTK_JUSTIFY_LEFT);
 	gtk_box_pack_start(GTK_BOX(hbox),help_label,TRUE,TRUE,TRUE);
 
-	Help_close_button = gtk_button_new_with_label("Close");	
-	g_signal_connect ((gpointer) Help_close_button, "clicked",
-			  G_CALLBACK (help_close),
-			  NULL);
-	gtk_box_pack_start(GTK_BOX(vbox),Help_close_button,FALSE,TRUE,0);
-	gtk_widget_set_can_default (Help_close_button, TRUE);
-	gtk_widget_grab_default(Help_close_button);
+	button = gtk_dialog_add_button (GTK_DIALOG (dialog), "gtk-close", GTK_RESPONSE_CLOSE);
+	gtk_widget_grab_focus (button);
 	
-	gtk_widget_show_all(help_window);
+	g_signal_connect_swapped (dialog, "response",
+	                          G_CALLBACK (gtk_widget_destroy),
+	                          (gpointer) dialog);
+
+	gtk_widget_show_all (dialog);
 }
 
 static void settings_dialog_response_cb (GtkDialog * dialog,
