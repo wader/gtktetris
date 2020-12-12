@@ -678,8 +678,8 @@ int main(int argc,char *argv[])
                             G_CALLBACK (gtk_widget_destroy),
                             (gpointer) main_window);
   gtk_widget_add_accelerator(menu_game_quit,"activate", accel_group,
-			     GDK_X, GDK_CONTROL_MASK,
-			     GTK_ACCEL_VISIBLE);	
+                             GDK_Q, GDK_CONTROL_MASK,
+                             GTK_ACCEL_VISIBLE);
   
   //Settings sub-menu
   menu_settings = gtk_menu_item_new_with_mnemonic ("_Settings");
