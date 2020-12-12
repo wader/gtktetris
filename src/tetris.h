@@ -13,6 +13,7 @@
 
 extern int BLOCK_WIDTH;
 extern int BLOCK_HEIGHT;
+extern GtkWidget * main_window;
 
 #define NUM_LEVELS 20
 #define NUM_HIGHSCORE 10

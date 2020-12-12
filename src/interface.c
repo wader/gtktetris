@@ -667,18 +667,21 @@ int main(int argc,char *argv[])
 			      accel_group,
 			      GDK_F1, (GdkModifierType) 0,
 			      GTK_ACCEL_VISIBLE);
-  
+
+  separator2 = gtk_menu_item_new ();
+  gtk_widget_show (separator2);
+  gtk_container_add (GTK_CONTAINER (menu_help_menu), separator2);
+
   high_scores1 = gtk_menu_item_new_with_mnemonic ("High-scores");
   gtk_widget_show (high_scores1);
   gtk_container_add (GTK_CONTAINER (menu_help_menu), high_scores1);
   g_signal_connect ((gpointer) high_scores1, "activate",
 		    G_CALLBACK (show_highscore_wrapper),
 		    NULL);
-  
+
   separator2 = gtk_menu_item_new ();
   gtk_widget_show (separator2);
   gtk_container_add (GTK_CONTAINER (menu_help_menu), separator2);
-  gtk_widget_set_sensitive (separator2, FALSE);
   
   about1 = gtk_menu_item_new_with_mnemonic ("About");
   gtk_widget_show (about1);

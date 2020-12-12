@@ -12,8 +12,6 @@ struct item
   int lines;
 };
 
-GtkWidget *highscore_window;
-
 struct item highscore[NUM_HIGHSCORE];
 
 void read_highscore()
@@ -39,34 +37,35 @@ void write_highscore()
   g_free (hfile);
 }
 
-void highscore_close(){
-  gtk_widget_hide(highscore_window);}
 
 void show_highscore(int place)
 {
 	GtkWidget *highscore_border;
+	GtkWidget * dialog;
 	GtkWidget *label;
 	GtkWidget *table;
-	GtkWidget *vbox;
-	GtkWidget *Highscore_close_button;
+	GtkWidget *vbox, * button;
 	int temp;
 	char dummy[40];
-	
-	highscore_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	gtk_window_set_title(GTK_WINDOW(highscore_window),"Highscores");
-	gtk_window_set_policy(GTK_WINDOW(highscore_window),FALSE,FALSE,TRUE);
-	gtk_window_set_position(GTK_WINDOW(highscore_window),GTK_WIN_POS_NONE/*CENTER*/);
-	
-	highscore_border = gtk_frame_new(NULL);
-	gtk_frame_set_shadow_type(GTK_FRAME(highscore_border),GTK_SHADOW_IN/*OUT*/);
-	gtk_widget_show(highscore_border);
-	gtk_container_add(GTK_CONTAINER(highscore_window),highscore_border);
 
-	vbox = gtk_vbox_new(FALSE,3);
-	gtk_container_add(GTK_CONTAINER(highscore_border),vbox);
+	dialog = gtk_dialog_new ();
+	gtk_window_set_title (GTK_WINDOW (dialog), "Highscores");
+	gtk_window_set_transient_for (GTK_WINDOW (dialog), GTK_WINDOW (main_window));
+	gtk_window_set_position (GTK_WINDOW (dialog), GTK_WIN_POS_CENTER_ON_PARENT);
+	gtk_window_set_modal (GTK_WINDOW (dialog), TRUE);
+	gtk_window_set_resizable (GTK_WINDOW (dialog), FALSE);
+	gtk_window_set_skip_pager_hint (GTK_WINDOW (dialog), TRUE);
+	gtk_window_set_skip_taskbar_hint (GTK_WINDOW (dialog), TRUE);
+	gtk_container_set_border_width (GTK_CONTAINER (dialog), 3);
+
+	vbox = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
+
+	highscore_border = gtk_frame_new (NULL);
+	gtk_widget_show (highscore_border);
+	gtk_box_pack_start (GTK_BOX (vbox), highscore_border, TRUE, TRUE, 5);
 
 	table = gtk_table_new(NUM_HIGHSCORE+1,5,FALSE);
-	gtk_container_add(GTK_CONTAINER(vbox),table);
+	gtk_container_add (GTK_CONTAINER (highscore_border),table);
 
 	label = gtk_label_new(" # ");
 	gtk_widget_show(label);
@@ -122,15 +121,15 @@ void show_highscore(int place)
 		gtk_table_attach_defaults(GTK_TABLE(table),label,4,5,temp+1,temp+2);
 		gtk_misc_set_alignment(GTK_MISC(label),1,0);
 	}
-	
-	Highscore_close_button = gtk_button_new_with_label("Close");	
-	g_signal_connect (G_OBJECT(Highscore_close_button), "clicked",
-			   G_CALLBACK(highscore_close), NULL);	
-	gtk_box_pack_start(GTK_BOX(vbox),Highscore_close_button,FALSE,TRUE,0);
-	gtk_widget_set_can_default (Highscore_close_button, TRUE);
-	gtk_widget_grab_default(Highscore_close_button);
 
-	gtk_widget_show_all(highscore_window);
+	button = gtk_dialog_add_button (GTK_DIALOG (dialog), "gtk-close", GTK_RESPONSE_CLOSE);
+	gtk_widget_grab_focus (button);
+	
+	g_signal_connect_swapped (dialog, "response",
+	                          G_CALLBACK (gtk_widget_destroy),
+	                          (gpointer) dialog);
+
+	gtk_widget_show_all(dialog);
 }
 
 int addto_highscore(char *name,long score, int level, int lines)
