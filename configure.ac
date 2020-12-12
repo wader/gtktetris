@@ -3,7 +3,7 @@
 AC_INIT([gtktetris], [0.6.2b])
 AM_CONFIG_HEADER([config.h])
 AM_INIT_AUTOMAKE([-Wall foreign])
-AC_CONFIG_MACRO_DIRS([m4])
+AC_CONFIG_MACRO_DIR([m4])
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 m4_ifdef([AM_MAINTAINER_MODE], [AM_MAINTAINER_MODE])
 LT_INIT

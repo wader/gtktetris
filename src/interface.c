@@ -573,6 +573,9 @@ int main(int argc,char *argv[])
   }
   g_free (config_dir);
 
+  // Initialize gtk
+  gtk_init (&argc,&argv);
+
   // set Block (tetromino) images size...
   blocks_xpm = blocks_xpm_normal;
   if (blocks_xpm == blocks_xpm_tiny) {
@@ -597,8 +600,6 @@ int main(int argc,char *argv[])
   // seed random generator
   srandom(time(NULL));
   //options.shw_nxt = TRUE;
-  
-  gtk_init(&argc,&argv);
 
   accel_group = gtk_accel_group_new();
   
