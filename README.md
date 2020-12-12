@@ -4,6 +4,8 @@ A simple Tetris clone for the GTK library.
 
 ## Requirements
 
+- GTK 2.14+
+
 ## Installation
 
 Run

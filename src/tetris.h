@@ -2,11 +2,7 @@
 #define _TETRIS_H_
 
 #include <gtk/gtk.h>
-
-#ifndef TRUE
-#define TRUE 1
-#define FALSE 0
-#endif
+#include "gtkcompat.h"
 
 #define MAX_X 10
 #define MAX_Y 18
