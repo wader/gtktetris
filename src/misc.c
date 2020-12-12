@@ -9,6 +9,8 @@
 
 void set_block(int x,int y,int color,int next)
 {
+// need to figure out how to replace this usage of gdk_draw_pixbuf
+#if ! GTK_CHECK_VERSION (3, 0, 0)
 	gdk_draw_pixbuf (
 			(!next ? gtk_widget_get_window (game_area) : gtk_widget_get_window (next_block_area)),
 			NULL,
@@ -17,6 +19,7 @@ void set_block(int x,int y,int color,int next)
 			x*BLOCK_WIDTH,     y*BLOCK_HEIGHT, /* dest_x, dest_y */
 			BLOCK_WIDTH,       BLOCK_HEIGHT,   /* width,  height */
 			0,0,0);
+#endif
 }
 
 int do_random(int max)
@@ -59,7 +62,7 @@ GtkWidget *label_box (GtkWidget *parent, GtkWidget *label, gchar *label_text)
          GtkWidget *box1;
 
          /* create box for label */
-         box1 = gtk_hbox_new (FALSE, 0);
+         box1 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
          gtk_container_set_border_width (GTK_CONTAINER (box1), 2);
 
          /* create label for button */

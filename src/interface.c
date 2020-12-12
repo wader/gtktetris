@@ -77,32 +77,32 @@ gint keyboard_event_handler(GtkWidget *widget,
     return FALSE;
   switch(event->keyval)
     {
-    case GDK_x: case GDK_X:
+    case GDK_KEY_x: case GDK_KEY_X:
       move_block(0,0,1); 
       event->keyval=0; 
       return TRUE;
       break;
-    case GDK_w: case GDK_W: case GDK_Up: 
+    case GDK_KEY_w: case GDK_KEY_W: case GDK_KEY_Up: 
       move_block(0,0,-1); 
       event->keyval=0; 
       return TRUE;
       break;
-    case GDK_s: case GDK_S:  
+    case GDK_KEY_s: case GDK_KEY_S:  
       move_down(); 
       event->keyval=0; 
       return TRUE;
       break;
-    case GDK_a: case GDK_A: case GDK_Left: 
+    case GDK_KEY_a: case GDK_KEY_A: case GDK_KEY_Left: 
       move_block(-1,0,0); 
       event->keyval=0; 
       return TRUE;
       break;
-    case GDK_d: case GDK_D: case GDK_Right: 
+    case GDK_KEY_d: case GDK_KEY_D: case GDK_KEY_Right: 
       move_block(1,0,0); 
       event->keyval=0; 
       return TRUE;
       break;
-    case GDK_space: case GDK_Down:
+    case GDK_KEY_space: case GDK_KEY_Down:
       while(move_down())
 	dropbonus++;
       current_score += dropbonus*(current_level+1);
@@ -114,10 +114,13 @@ gint keyboard_event_handler(GtkWidget *widget,
   return FALSE;
 }
 
-gint game_area_expose_event(GtkWidget       *widget,
-			    GdkEventExpose  *event,
-			    gpointer         user_data)
-{	
+static gboolean
+#if GTK_CHECK_VERSION (3, 0, 0)
+game_area_draw_event (GtkWidget * widget, cairo_t * cr, gpointer user_data)
+#else // gtk2
+game_area_expose_event (GtkWidget * widget, GdkEventExpose * event, gpointer user_data)
+#endif
+{
   if(!game_over)
     {
       from_virtual();
@@ -125,32 +128,43 @@ gint game_area_expose_event(GtkWidget       *widget,
     }
   else
     {
-      cairo_t *cr;
+#if ! GTK_CHECK_VERSION (3, 0, 0)
+      cairo_t *cr; // GTK2 create cairo context
       cr = gdk_cairo_create (gtk_widget_get_window (widget));
+#endif
       gdk_cairo_set_source_color (cr, &color_black);
       cairo_rectangle (cr,
                        0, 0,
-                       widget->allocation.width,
-                       widget->allocation.height);
+                       gtk_widget_get_allocated_width (widget),
+                       gtk_widget_get_allocated_height (widget));
       cairo_fill (cr);
-      cairo_destroy (cr);
+#if ! GTK_CHECK_VERSION (3, 0, 0)
+      cairo_destroy (cr); // GTK2 destroy cairo context
+#endif
     }
   return FALSE;
 }
 
-gboolean next_block_area_expose_event(GtkWidget       *widget,
-				      GdkEventExpose  *event,
-				      gpointer         user_data)
+static gboolean
+#if GTK_CHECK_VERSION (3, 0, 0)
+next_block_area_draw_event (GtkWidget * widget, cairo_t * cr, gpointer user_data)
+#else // gtk2
+next_block_area_expose_event (GtkWidget * widget, GdkEventExpose * event, gpointer user_data)
+#endif
 {
-	cairo_t *cr;
+#if ! GTK_CHECK_VERSION (3, 0, 0)
+	cairo_t *cr; // GTK2 create cairo context
 	cr = gdk_cairo_create (gtk_widget_get_window (widget));
+#endif
 	gdk_cairo_set_source_color (cr, &color_black);
 	cairo_rectangle (cr,
 	                 0, 0,
-	                 widget->allocation.width,
-	                 widget->allocation.height);
+	                 gtk_widget_get_allocated_width (widget),
+	                 gtk_widget_get_allocated_height (widget));
 	cairo_fill (cr);
-	cairo_destroy (cr);
+#if ! GTK_CHECK_VERSION (3, 0, 0)
+	cairo_destroy (cr); // GTK2 destroy cairo context
+#endif
 
 	if(!game_over && options.shw_nxt)
 		draw_block(0,0,next_block,next_frame,FALSE,TRUE);
@@ -215,8 +229,8 @@ void game_over_init()
 	gdk_cairo_set_source_color (cr, &color_black);
 	cairo_rectangle (cr,
 	                 0, 0,
-	                 game_area->allocation.width,
-	                 game_area->allocation.height);
+	                 gtk_widget_get_allocated_width (game_area),
+	                 gtk_widget_get_allocated_height (game_area));
 	cairo_fill (cr);
 	cairo_destroy (cr);
 
@@ -224,8 +238,8 @@ void game_over_init()
 	gdk_cairo_set_source_color (cr, &color_black);
 	cairo_rectangle (cr,
 	                 0, 0,
-	                 next_block_area->allocation.width,
-	                 next_block_area->allocation.height);
+	                 gtk_widget_get_allocated_width (next_block_area),
+	                 gtk_widget_get_allocated_height (next_block_area));
 	cairo_fill (cr);
 	cairo_destroy (cr);
 
@@ -324,10 +338,10 @@ void show_help(GtkMenuItem     *menuitem,
 	frame = gtk_frame_new (NULL);
 	gtk_box_pack_start (GTK_BOX (vbox), frame, TRUE, TRUE, 0);
 
-	vbox = gtk_vbox_new(FALSE,3);
+	vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL,3);
 	gtk_container_add (GTK_CONTAINER (frame),vbox);
 
-	hbox = gtk_hbox_new(FALSE,30);
+	hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL,30);
 	gtk_container_add(GTK_CONTAINER(vbox),hbox);
 
 	help_label = gtk_label_new(	"\nKeys:\n"
@@ -558,7 +572,9 @@ int main(int argc,char *argv[])
 			 gdk_pixbuf_new_from_xpm_data((gchar const **)tetris_xpm));
   // window
   main_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+#if ! GTK_CHECK_VERSION (3, 0, 0)
   gtk_window_set_policy(GTK_WINDOW(main_window),FALSE,FALSE,TRUE);
+#endif
   gtk_window_set_title(GTK_WINDOW(main_window),"GTK Tetris");
   gtk_window_set_icon_list(GTK_WINDOW(main_window),IconList);
   g_signal_connect ((gpointer) main_window, "key_press_event",
@@ -568,7 +584,7 @@ int main(int argc,char *argv[])
                     G_CALLBACK (gtk_main_quit), NULL);
 
   // vertical box
-  v_box = gtk_vbox_new(FALSE,0);
+  v_box = gtk_box_new (GTK_ORIENTATION_VERTICAL,0);
   gtk_container_add(GTK_CONTAINER(main_window),v_box);
   gtk_widget_show(v_box);
   
@@ -592,7 +608,7 @@ int main(int argc,char *argv[])
 		    G_CALLBACK (game_start_stop),
 		    NULL);
   gtk_widget_add_accelerator (menu_game_quick, "activate", accel_group,
-			      GDK_G, GDK_CONTROL_MASK,
+			      GDK_KEY_G, GDK_CONTROL_MASK,
 			      GTK_ACCEL_VISIBLE);
   
   menu_game_stop = gtk_menu_item_new_with_mnemonic ("Stop Game");
@@ -602,7 +618,7 @@ int main(int argc,char *argv[])
 		    G_CALLBACK (game_start_stop),
 		    NULL);
   gtk_widget_add_accelerator (menu_game_stop, "activate", accel_group,
-			      GDK_O, GDK_CONTROL_MASK,
+			      GDK_KEY_O, GDK_CONTROL_MASK,
 			      GTK_ACCEL_VISIBLE);
   gtk_widget_set_sensitive(menu_game_stop,FALSE);
   
@@ -613,7 +629,7 @@ int main(int argc,char *argv[])
 		    G_CALLBACK (game_set_pause),
 		    NULL);
   gtk_widget_add_accelerator (menu_game_pause, "activate", accel_group,
-			      GDK_P, GDK_CONTROL_MASK,
+			      GDK_KEY_P, GDK_CONTROL_MASK,
 			      GTK_ACCEL_VISIBLE);
   
   separatormenuitem1 = gtk_menu_item_new ();
@@ -627,7 +643,7 @@ int main(int argc,char *argv[])
   g_signal_connect (menu_game_start, "activate",
                     G_CALLBACK (show_settings_dialog), NULL);
   gtk_widget_add_accelerator (menu_game_start, "activate",  accel_group,
-                              GDK_S, GDK_CONTROL_MASK,
+                              GDK_KEY_S, GDK_CONTROL_MASK,
                               GTK_ACCEL_VISIBLE);
 
   separatormenuitem1 = gtk_menu_item_new ();
@@ -642,7 +658,7 @@ int main(int argc,char *argv[])
                             G_CALLBACK (gtk_widget_destroy),
                             (gpointer) main_window);
   gtk_widget_add_accelerator(menu_game_quit,"activate", accel_group,
-                             GDK_Q, GDK_CONTROL_MASK,
+                             GDK_KEY_Q, GDK_CONTROL_MASK,
                              GTK_ACCEL_VISIBLE);
   
   //Help sub-menu
@@ -663,7 +679,7 @@ int main(int argc,char *argv[])
 		    NULL);
   gtk_widget_add_accelerator (help1, "activate", 
 			      accel_group,
-			      GDK_F1, (GdkModifierType) 0,
+			      GDK_KEY_F1, (GdkModifierType) 0,
 			      GTK_ACCEL_VISIBLE);
 
   separator2 = gtk_menu_item_new ();
@@ -689,7 +705,7 @@ int main(int argc,char *argv[])
 		    NULL);
   
   // horizontal box
-  h_box = gtk_hbox_new(FALSE,1);
+  h_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL,1);
   gtk_widget_show(h_box);
   gtk_box_pack_start(GTK_BOX(v_box),h_box,FALSE,FALSE,0);
   
@@ -704,15 +720,20 @@ int main(int argc,char *argv[])
   gtk_widget_show(game_area);
   gtk_widget_set_size_request (GTK_WIDGET(game_area),
 			MAX_X*BLOCK_WIDTH,MAX_Y*BLOCK_HEIGHT);
-  g_signal_connect ((gpointer) game_area, "expose_event",
-		    G_CALLBACK (game_area_expose_event),
-		    NULL);
+
+#if GTK_CHECK_VERSION (3, 0, 0)
+  g_signal_connect (game_area, "draw",
+                    G_CALLBACK (game_area_draw_event), NULL);
+#else // gtk2
+  g_signal_connect (game_area, "expose_event",
+                    G_CALLBACK (game_area_expose_event), NULL);
+#endif
   
   gtk_widget_set_events(game_area, GDK_EXPOSURE_MASK);
   gtk_container_add(GTK_CONTAINER(game_border),game_area);
   
   // right_side
-  right_side = gtk_vbox_new(FALSE,0);
+  right_side = gtk_box_new (GTK_ORIENTATION_VERTICAL,0);
   gtk_box_pack_start(GTK_BOX(h_box),right_side,FALSE,FALSE,0);
   gtk_widget_show(right_side);
   
@@ -727,9 +748,14 @@ int main(int argc,char *argv[])
   gtk_widget_show(next_block_area);
   gtk_widget_set_size_request (GTK_WIDGET(next_block_area),
 			4*BLOCK_WIDTH,4*BLOCK_HEIGHT);
-  g_signal_connect ((gpointer) next_block_area, "expose_event",
-		    G_CALLBACK (next_block_area_expose_event),
-		    NULL);
+
+#if GTK_CHECK_VERSION (3, 0, 0)
+  g_signal_connect (next_block_area, "draw",
+                    G_CALLBACK (next_block_area_draw_event), NULL);
+#else // gtk2
+  g_signal_connect (next_block_area, "expose_event",
+                    G_CALLBACK (next_block_area_expose_event), NULL);
+#endif
   gtk_widget_set_events(next_block_area, GDK_EXPOSURE_MASK);
   gtk_container_add(GTK_CONTAINER(next_block_border),next_block_area);
   

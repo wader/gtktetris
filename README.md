@@ -15,7 +15,7 @@ Run
 - make
 - make install
 
-To build the GTK3 port (currently does not compile):
+To build the GTK3 port (currently broken):
 
 - ./configure --prefix=/usr --enable-gtk3
 
