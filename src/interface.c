@@ -206,7 +206,6 @@ void game_over_init()
 	if(current_score && (high_dummy = addto_highscore((char *)getenv("USER"),current_score,current_level,current_lines)))
 	{
 		write_highscore();
-		show_highscore(high_dummy);
 	}
 	
 	game_over = TRUE;
