@@ -404,11 +404,12 @@ static void settings_dialog_response_cb (GtkDialog * dialog,
 void show_settings_dialog (GtkMenuItem *menuitem,
                            gpointer    user_data)
 {
-  GtkWidget *label;
-  GtkWidget *frame;
-  GtkWidget *vbox, * checkbox, * button;
-  GtkWidget *table;
-  GtkAdjustment *adj;
+  GtkWidget * frame;
+  GtkWidget * vbox, * checkbox, * button;
+  GtkWidget * vbox_table;
+  GtkWidget * hbox_row[3], * labels[3], * spins[3];
+  GtkAdjustment * adjs[3];
+  int i;
 
   settings_dialog = gtk_dialog_new ();
 
@@ -424,6 +425,7 @@ void show_settings_dialog (GtkMenuItem *menuitem,
   vbox = gtk_dialog_get_content_area (GTK_DIALOG (settings_dialog));
   gtk_box_set_spacing (GTK_BOX (vbox), 2);
 
+  // vbox -> frame
   frame = gtk_frame_new ("Blocks");
   gtk_box_pack_start (GTK_BOX (vbox), frame, TRUE, TRUE, 0);
   checkbox = gtk_check_button_new_with_mnemonic ("_Show next block");
@@ -432,34 +434,43 @@ void show_settings_dialog (GtkMenuItem *menuitem,
   gtk_container_set_border_width (GTK_CONTAINER (checkbox),5);
   show_block_chk = checkbox;
 
+  // vbox -> frame
   frame = gtk_frame_new ("Level");
-  gtk_box_pack_start(GTK_BOX(vbox),frame,TRUE,TRUE,0);
-  
-  table = gtk_table_new(3,2,TRUE);
-  gtk_container_add(GTK_CONTAINER(frame),table);
-  gtk_table_set_row_spacings (GTK_TABLE (table), 5);
-  gtk_table_set_col_spacings (GTK_TABLE (table), 5);
-  gtk_container_set_border_width (GTK_CONTAINER (table), 5);
-  
-  label = gtk_label_new("Start level:");
-  adj = (GtkAdjustment *)gtk_adjustment_new(options.level,0,
-					    NUM_LEVELS-1,1,1,0);
-  spin_level = gtk_spin_button_new(adj,0,0);	
-  gtk_table_attach_defaults(GTK_TABLE(table),label,0,1,0,1);
-  gtk_table_attach_defaults(GTK_TABLE(table),spin_level,1,2,0,1);
-  
-  label = gtk_label_new("Noise level:");
-  adj = (GtkAdjustment *)gtk_adjustment_new(options.noise_l,0,MAX_X-1,1,1,0);
-  spin_noise_level = gtk_spin_button_new(adj,0,0);	
-  gtk_table_attach_defaults(GTK_TABLE(table),label,0,1,1,2);
-  gtk_table_attach_defaults(GTK_TABLE(table),spin_noise_level,1,2,1,2);
-  
-  label = gtk_label_new("Noise height:");
-  adj = (GtkAdjustment *)gtk_adjustment_new(options.noise_h,0,MAX_Y-4,1,1,0);
-  spin_noise_height = gtk_spin_button_new(adj,0,0);	
-  gtk_table_attach_defaults(GTK_TABLE(table),label,0,1,2,3);
-  gtk_table_attach_defaults(GTK_TABLE(table),spin_noise_height,1,2,2,3);
-  
+  gtk_box_pack_start(GTK_BOX(vbox),frame,TRUE,TRUE,2);
+
+  // vbox -> frame -> vbox
+  vbox_table = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+  gtk_container_add (GTK_CONTAINER (frame), vbox_table);
+  gtk_container_set_border_width (GTK_CONTAINER (vbox_table), 5);
+
+  labels[0] = gtk_label_new ("Start level: ");
+  adjs[0]   = (GtkAdjustment *) gtk_adjustment_new (options.level, 0,
+                                  NUM_LEVELS-1, 1, 1, 0);
+  spins[0]  = gtk_spin_button_new (adjs[0], 0, 0);
+  spin_level = spins[0];
+
+  labels[1] = gtk_label_new ("Noise level: ");
+  adjs[1]   = (GtkAdjustment *) gtk_adjustment_new (options.noise_l, 0 ,
+                                  MAX_X-1, 1, 1, 0);
+  spins[1]  = gtk_spin_button_new (adjs[1], 0, 0);
+  spin_noise_level = spins[1];
+
+  labels[2] = gtk_label_new ("Noise height: ");
+  adjs[2]   = (GtkAdjustment *) gtk_adjustment_new (options.noise_h, 0,
+                                  MAX_Y-4, 1, 1, 0);
+  spins[2]  = gtk_spin_button_new (adjs[2], 0, 0);
+  spin_noise_height = spins[2];
+
+  // vbox -> frame -> vbox -> hbox[x]
+  for (i = 0; i < 3; i++)
+  {
+    hbox_row[i] = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+    gtk_box_pack_start (GTK_BOX (vbox_table), hbox_row[i], FALSE, FALSE, 2);
+
+    gtk_box_pack_end (GTK_BOX (hbox_row[i]), spins[i],  FALSE, FALSE, 0);
+    gtk_box_pack_end (GTK_BOX (hbox_row[i]), labels[i], FALSE, FALSE, 0);
+  }
+
   button = gtk_dialog_add_button (GTK_DIALOG (settings_dialog),
                                   "gtk-ok", GTK_RESPONSE_OK);
   button = gtk_dialog_add_button (GTK_DIALOG (settings_dialog),
