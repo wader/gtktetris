@@ -15,8 +15,13 @@ Run
 - make
 - make install
 
-To build the GTK3 port (currently broken):
+To build the GTK3 port:
 
 - ./configure --prefix=/usr --enable-gtk3
+
+The GTK3 version provides HiDPI support with:
+
+- `GDK_SCALE=2 ./gtktetris` - make UI 2x bigger
+- `GDK_SCALE=3 ./gtktetris` - make UI 3x bigger
 
 You can also just run the compiled binary: src/gtktetris.
