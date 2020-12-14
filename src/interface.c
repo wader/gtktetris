@@ -346,7 +346,7 @@ void show_help(GtkMenuItem     *menuitem,
 					"Triple\n"
 					"TETRIS\n\n"
 					"Drop bonus: rows*level\n");
-	gtk_misc_set_alignment(GTK_MISC(help_label),0,0);	
+	gtkcompat_widget_set_halign_left (help_label);
 	gtk_label_set_justify(GTK_LABEL(help_label),GTK_JUSTIFY_LEFT);
 	gtk_box_pack_start(GTK_BOX(hbox),help_label,TRUE,TRUE,TRUE);
 
@@ -359,7 +359,7 @@ void show_help(GtkMenuItem     *menuitem,
 					"drop block\n\n\n"
 					"40\n100\n"
 					"300\n1200\n");
-	gtk_misc_set_alignment(GTK_MISC(help_label),0,0);	
+	gtkcompat_widget_set_halign_left (help_label);
 	gtk_label_set_justify(GTK_LABEL(help_label),GTK_JUSTIFY_LEFT);
 	gtk_box_pack_start(GTK_BOX(hbox),help_label,TRUE,TRUE,TRUE);
 
