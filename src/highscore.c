@@ -73,6 +73,8 @@ void show_highscore(int place)
 
 	treeview = GTK_TREE_VIEW (gtk_tree_view_new_with_model (tree_model));
 
+	gtk_tree_view_set_grid_lines (GTK_TREE_VIEW (treeview), GTK_TREE_VIEW_GRID_LINES_HORIZONTAL);
+
 	tree_sel = gtk_tree_view_get_selection (treeview);
 	gtk_tree_selection_set_mode (tree_sel, GTK_SELECTION_NONE); //_SINGLE _MULTIPLE
 
