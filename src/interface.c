@@ -114,25 +114,15 @@ gint keyboard_event_handler(GtkWidget *widget,
 }
 
 
-// cr_source != NULL: already created, widget is ignored
-// cr_source == NULL: need to create,  widget is required
-static void set_background_color (cairo_t * cr_source, GtkWidget * widget)
+static void set_background_color (cairo_t * cr, GtkWidget * widget)
 {
-   cairo_t * cr;
-   if (cr_source) {
-      cr = cr_source;
-   } else {
-      cr = gdk_cairo_create (gtk_widget_get_window (widget));
-   }
+   int width  = gtk_widget_get_allocated_width (widget);
+   int height = gtk_widget_get_allocated_height (widget);
    cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
    cairo_rectangle (cr,
                     0, 0,
-                    gtk_widget_get_allocated_width (widget),
-                    gtk_widget_get_allocated_height (widget));
+                    width, height);
    cairo_fill (cr);
-   if (!cr_source) {
-      cairo_destroy (cr);
-   }
 }
 
 
@@ -150,10 +140,12 @@ game_area_expose_event (GtkWidget * widget, GdkEventExpose * event, gpointer use
     }
   else
     {
-#if GTK_CHECK_VERSION (3, 0, 0)
+#if GTK_MAJOR_VERSION == 2
+      cairo_t * cr = gdk_cairo_create (gtk_widget_get_window (widget));
+#endif
       set_background_color (cr, widget);
-#else // GTK2
-      set_background_color (NULL, widget);
+#if GTK_MAJOR_VERSION == 2
+      cairo_destroy (cr);
 #endif
     }
   return FALSE;
@@ -166,10 +158,12 @@ next_block_area_draw_event (GtkWidget * widget, cairo_t * cr, gpointer user_data
 next_block_area_expose_event (GtkWidget * widget, GdkEventExpose * event, gpointer user_data)
 #endif
 {
-#if GTK_CHECK_VERSION (3, 0, 0)
+#if GTK_MAJOR_VERSION == 2
+	cairo_t * cr = gdk_cairo_create (gtk_widget_get_window (widget));
+#endif
 	set_background_color (cr, widget);
-#else // GTK2
-	set_background_color (NULL, widget);
+#if GTK_MAJOR_VERSION == 2
+	cairo_destroy (cr);
 #endif
 	if(!game_over && options.shw_nxt)
 		draw_block(0,0,next_block,next_frame,FALSE,TRUE);
@@ -229,8 +223,8 @@ void game_over_init()
 	game_over = TRUE;
 	game_play = FALSE;
 
-	set_background_color (NULL, game_area);
-	set_background_color (NULL, next_block_area);
+	gtk_widget_queue_draw (game_area);
+	gtk_widget_queue_draw (next_block_area);
 
 	game_set_pause(GTK_WIDGET(menu_game_pause),NULL);
 	gtk_label_set_text (GTK_LABEL(Start_stop_button_label),start_stop_str[0]);
