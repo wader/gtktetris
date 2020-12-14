@@ -27,12 +27,6 @@ char *pause_str[2]={"Pause\0","Resume\0"};
 char *start_stop_str[2]={"Start Game\0","Stop game\0"};
 GtkWidget * main_window;
 
-#if GTK_CHECK_VERSION (3, 0, 0)
-GdkRGBA color_black = { 0.0, 0.0, 0.0, 1.0 }; /* 1.0 = solid */
-#else // GTK2
-GdkColor color_black = { 0, 0, 0, 0 };
-#endif
-
 GtkWidget *score_label1;
 GtkWidget *score_label2;
 GtkWidget *level_label1;
@@ -130,11 +124,7 @@ static void set_background_color (cairo_t * cr_source, GtkWidget * widget)
    } else {
       cr = gdk_cairo_create (gtk_widget_get_window (widget));
    }
-#if GTK_CHECK_VERSION (3, 0, 0)
-   gdk_cairo_set_source_rgba (cr, &color_black);
-#else // gtk2
-   gdk_cairo_set_source_color (cr, &color_black);
-#endif
+   cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
    cairo_rectangle (cr,
                     0, 0,
                     gtk_widget_get_allocated_width (widget),
