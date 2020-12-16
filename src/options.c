@@ -1,6 +1,6 @@
 #include "tetris.h"
 
-#define OPTIONS_FILE "config"
+#define OPTIONS_FILE "config.ini"
 
 static GtkWidget * settings_dialog;
 static GtkWidget * spin_level;
@@ -19,27 +19,37 @@ void options_defaults (void)
 
 static void options_save (void)
 {
-   FILE *fp;
    char * options_f = get_config_dir_file (OPTIONS_FILE);
-   if ((fp = fopen (options_f,"wb"))) {
-      fwrite (&options, 1, sizeof(options),fp);
-      fclose (fp);
-   } else {
-      printf ("gtktetris: Write ERROR!\n");
-   }
+   GKeyFile * kfile;
+
+   kfile = g_key_file_new ();
+   g_key_file_set_integer (kfile, "settings", "start_level", options.start_level);
+   g_key_file_set_integer (kfile, "settings", "noise_level", options.noise_level);
+   g_key_file_set_integer (kfile, "settings", "noise_height", options.noise_height);
+   g_key_file_set_integer (kfile, "settings", "show_next_block", options.show_next_block);
+   g_key_file_save_to_file (kfile, options_f, NULL);
+   g_key_file_free (kfile);
+
    g_free (options_f);
 }
 
 
 void options_read (void)
 {
-   FILE *fp;
    char * options_f = get_config_dir_file (OPTIONS_FILE);
-   if ((fp = fopen (options_f, "rb")))
+   GKeyFile * kfile;
+
+   kfile = g_key_file_new ();
+   if (g_key_file_load_from_file (kfile, options_f,
+                                  G_KEY_FILE_NONE, NULL))
    {
-      fread (&options, 1, sizeof(options), fp);
-      fclose (fp);
+      options.start_level = g_key_file_get_integer (kfile, "settings", "start_level", NULL);
+      options.noise_level = g_key_file_get_integer (kfile, "settings", "noise_level", NULL);
+      options.noise_height = g_key_file_get_integer (kfile, "settings", "noise_height", NULL);
+      options.show_next_block = g_key_file_get_integer (kfile, "settings", "show_next_block", NULL);
    }
+   g_key_file_free (kfile);
+
    g_free (options_f);
 }
 
