@@ -31,7 +31,11 @@ int current_level;
 int current_lines;
 int next_block;
 int next_frame;
-//int show_next_block;
+
+// options.c
+void options_defaults (void);
+void options_read(void);
+void options_show_dialog (void);
 
 struct Options
 {

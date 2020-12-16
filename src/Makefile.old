@@ -1,12 +1,9 @@
 PROGRAM = gtktetris
-GETTEXT_PACKAGE = gtktetris
-OBJS = misc.o highscore.o tetris.o interface.o
+OBJS = misc.o highscore.o tetris.o options.o interface.o
 BIN_PATH = /usr/local/bin
-#SIZE = -DBIGGERBLOCKS
-SIZE = -DBIGBLOCKS
 CC = gcc
 
-CFLAGS = `pkg-config gtk+-2.0 --cflags` -Wall -O2 $(SIZE) 
+CFLAGS = `pkg-config gtk+-2.0 --cflags` -Wall -O2
 LIBS = `pkg-config gtk+-2.0 --libs`
 
 all: $(OBJS)
