@@ -10,10 +10,10 @@ static GtkWidget * show_block_chk;
 
 void options_defaults (void)
 {
-   options.level = 0;
-   options.noise_h = 0;
-   options.noise_l = 0;
-   options.shw_nxt = 1;
+   options.start_level = 0;
+   options.noise_level = 0;
+   options.noise_height = 0;
+   options.show_next_block = 1;
 }
 
 
@@ -49,11 +49,11 @@ static void settings_dialog_response_cb (GtkDialog * dialog,
 {
    if (response == GTK_RESPONSE_OK)
    {
-      options.level = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (spin_level));
-      options.noise_l = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (spin_noise_level));
-      options.noise_h = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (spin_noise_height));
-      options.shw_nxt = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (show_block_chk));
-      current_level = options.level;
+      options.start_level = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (spin_level));
+      options.noise_level = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (spin_noise_level));
+      options.noise_height = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (spin_noise_height));
+      options.show_next_block = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (show_block_chk));
+      current_level = options.start_level;
       update_game_values ();
       options_save ();
    }
@@ -90,7 +90,7 @@ void options_show_dialog (void)
   gtk_box_pack_start (GTK_BOX (vbox), frame, TRUE, TRUE, 0);
   checkbox = gtk_check_button_new_with_mnemonic ("_Show next block");
   gtk_container_add (GTK_CONTAINER (frame), checkbox);
-  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), options.shw_nxt);
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), options.show_next_block);
   gtk_container_set_border_width (GTK_CONTAINER (checkbox),5);
   show_block_chk = checkbox;
 
@@ -104,19 +104,19 @@ void options_show_dialog (void)
   gtk_container_set_border_width (GTK_CONTAINER (vbox_table), 5);
 
   labels[0] = gtk_label_new ("Start level: ");
-  adjs[0]   = (GtkAdjustment *) gtk_adjustment_new (options.level, 0,
+  adjs[0]   = (GtkAdjustment *) gtk_adjustment_new (options.start_level, 0,
                                    NUM_LEVELS-1, 1, 1, 0);
   spins[0]  = gtk_spin_button_new (adjs[0], 0, 0);
   spin_level = spins[0];
 
   labels[1] = gtk_label_new ("Noise level: ");
-  adjs[1]   = (GtkAdjustment *) gtk_adjustment_new (options.noise_l, 0 ,
+  adjs[1]   = (GtkAdjustment *) gtk_adjustment_new (options.noise_level, 0 ,
                                    MAX_X-1, 1, 1, 0);
   spins[1]  = gtk_spin_button_new (adjs[1], 0, 0);
   spin_noise_level = spins[1];
 
   labels[2] = gtk_label_new ("Noise height: ");
-  adjs[2]   = (GtkAdjustment *) gtk_adjustment_new (options.noise_h, 0,
+  adjs[2]   = (GtkAdjustment *) gtk_adjustment_new (options.noise_height, 0,
                                    MAX_Y-4, 1, 1, 0);
   spins[2]  = gtk_spin_button_new (adjs[2], 0, 0);
   spin_noise_height = spins[2];

@@ -39,10 +39,10 @@ void options_show_dialog (void);
 
 struct Options
 {
-  int level;
-  int noise_l;
-  int noise_h;
-  gint shw_nxt;
+  int start_level;
+  int noise_level;
+  int noise_height;
+  int show_next_block;
 };
 
 struct Options options;

@@ -177,7 +177,7 @@ void new_block()
 	else if(valid_position(current_x,current_y-1,current_block,current_frame))
 		current_y-=1;
 
-	if(options.shw_nxt)
+	if(options.show_next_block)
 	{
 		draw_block(0,0,current_block,current_frame,TRUE,TRUE);
 		draw_block(0,0,next_block,next_frame,FALSE,TRUE);
@@ -205,7 +205,7 @@ void game_init()
 	game_over = FALSE;
 	game_pause = FALSE;
 	current_score = 0;
-	current_level = options.level;
+	current_level = options.start_level;
 	current_lines = 0;
 	memset(virtual,0,sizeof(virtual));	
 	new_block();

@@ -156,7 +156,7 @@ next_block_area_expose_event (GtkWidget * widget, GdkEventExpose * event, gpoint
 #if GTK_MAJOR_VERSION == 2
 	cairo_destroy (cr);
 #endif
-	if(!game_over && options.shw_nxt)
+	if(!game_over && options.show_next_block)
 		draw_block(0,0,next_block,next_frame,FALSE,TRUE);
 	return FALSE;
 }
@@ -245,10 +245,10 @@ void game_start_stop(GtkMenuItem     *widget,
       gtk_widget_set_sensitive(Pause_button,TRUE);
       gtk_widget_grab_default(Pause_button);
       game_init();
-      make_noise(options.noise_l,options.noise_h);
+      make_noise(options.noise_level,options.noise_height);
       from_virtual();
       move_block(0,0,0);
-      current_level = options.level;
+      current_level = options.start_level;
       update_game_values(0,current_level,0);
       timer = g_timeout_add(level_speeds[current_level],(GSourceFunc)game_loop,NULL);
     }
@@ -424,7 +424,7 @@ int main(int argc,char *argv[])
   current_x = current_y = 0;
   current_block = current_frame = 0;
   current_score = current_lines = 0;
-  current_level = options.level; 
+  current_level = options.start_level; 
   next_block = next_frame = 0;
   // seed random generator
   srandom(time(NULL));
