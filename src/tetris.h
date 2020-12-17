@@ -1,3 +1,7 @@
+/*
+ * common includes
+ */
+
 #ifndef _TETRIS_H__
 #define _TETRIS_H_
 

@@ -1,4 +1,7 @@
-/* highscore dialog and functions */
+/* 
+ * highscore dialog and functions
+ * it's briefly used in interface.c
+ */
 
 #include <stdio.h>
 #include <string.h>

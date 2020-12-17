@@ -1,3 +1,7 @@
+/*
+ * preferences stored in a file
+ */
+
 #include "tetris.h"
 
 #define OPTIONS_FILE "config.ini"

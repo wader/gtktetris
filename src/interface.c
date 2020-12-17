@@ -1,3 +1,8 @@
+/*
+ *  gtk interface to tetris.c
+ * 
+ */
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -5,8 +10,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <gdk/gdkkeysyms.h>
-#include <gtk/gtk.h>
 
 #include "tetris.h"
 #include "tetris.xpm" /* tetris_xpm */

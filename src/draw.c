@@ -1,3 +1,9 @@
+/* 
+ * draw on surfaces with Cairo 
+ * - interface.c: provides cairo context and/or widget
+ * - tetris.c   : calls set_block
+ */
+
 #include "tetris.h"
 
 static void //  https://stackoverflow.com/a/36483677 

@@ -1,3 +1,8 @@
+/* 
+ * game logic / virtual definition of the game
+ * to be used by a interface
+ */
+
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
