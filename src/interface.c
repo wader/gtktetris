@@ -376,8 +376,6 @@ int main(int argc,char *argv[])
   char dmmy[20];
   GtkWidget *v_box;
   GtkWidget *h_box;
-  GtkWidget *box1;
-  GtkWidget *box2;
   GtkWidget *right_side;
   GtkWidget *game_border;	
   GtkWidget *next_block_border;
@@ -659,36 +657,29 @@ int main(int argc,char *argv[])
   
   //the game buttons
   //Start_stop
-  Start_stop_button = gtk_button_new();
+  Start_stop_button = gtk_button_new_with_label (start_stop_str[0]);
+  Start_stop_button_label = gtk_bin_get_child (GTK_BIN (Start_stop_button));
   gtk_widget_show(Start_stop_button);
-  g_signal_connect ((gpointer) Start_stop_button, "clicked",
-		    G_CALLBACK (game_start_stop),
-		    NULL);
-  Start_stop_button_label= gtk_label_new(start_stop_str[0]);
-  box2 = label_box(right_side, Start_stop_button_label, 
-		   start_stop_str[0] );
-  gtk_widget_show(box2);
-  gtk_container_add (GTK_CONTAINER (Start_stop_button), box2);
+  g_signal_connect (Start_stop_button, "clicked",
+                    G_CALLBACK (game_start_stop), NULL);
+
   gtk_box_pack_start(GTK_BOX(right_side),Start_stop_button,FALSE,FALSE,3);
   gtk_widget_set_can_default (Start_stop_button, TRUE);
   gtk_widget_grab_default(Start_stop_button);
+
   //Pause
-  Pause_button = gtk_button_new();
+  Pause_button = gtk_button_new_with_label (pause_str[0]);
+  Pause_button_label = gtk_bin_get_child (GTK_BIN (Pause_button));
   gtk_widget_show(Pause_button);
-  g_signal_connect ((gpointer) Pause_button, "clicked",
-		    G_CALLBACK (game_set_pause_b),
-		    NULL);
-  Pause_button_label = gtk_label_new(pause_str[0]);
-  box1 = label_box(right_side, Pause_button_label, pause_str[0] );
-  gtk_widget_show(box1);
-  gtk_container_add (GTK_CONTAINER (Pause_button), box1);
+  g_signal_connect (Pause_button, "clicked",
+                    G_CALLBACK (game_set_pause_b), NULL);
   gtk_box_pack_start(GTK_BOX(right_side),Pause_button,FALSE,FALSE,3);
   gtk_widget_set_can_default (Pause_button, TRUE);
   gtk_widget_set_sensitive(Pause_button,FALSE);
   
   gtk_window_add_accel_group (GTK_WINDOW (main_window), accel_group);
   
-  gtk_widget_show(main_window);
+  gtk_widget_show_all (main_window);
   
   gtk_main ();
   return 0;

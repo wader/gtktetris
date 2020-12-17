@@ -71,7 +71,6 @@ void set_block(int x,int y,int color,int next);
 int do_random(int max);
 void set_label_with_color (GtkWidget * w, char * color, char * text);
 char * get_config_dir_file (const char * file);
-GtkWidget *label_box (GtkWidget *parent, GtkWidget *label, gchar *label_text);
 
 // highscore.c
 void read_highscore();

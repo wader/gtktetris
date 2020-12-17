@@ -108,23 +108,3 @@ char * get_config_dir_file (const char * file)
    }
    return (res);
 }
-
-
-GtkWidget *label_box (GtkWidget *parent, GtkWidget *label, gchar *label_text)
-     {
-         GtkWidget *box1;
-
-         /* create box for label */
-         box1 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
-         gtk_container_set_border_width (GTK_CONTAINER (box1), 2);
-
-         /* create label for button */
-         gtk_label_set_text (GTK_LABEL(label), label_text);
-
-         /* pack the label into the box */
-         gtk_box_pack_start (GTK_BOX (box1), label, TRUE, TRUE, 3);
-         gtk_widget_show(label);
-
-         return (box1);
-     }
-
