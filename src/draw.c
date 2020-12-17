@@ -6,6 +6,18 @@
 
 #include "tetris.h"
 
+void set_background_color (cairo_t * cr, GtkWidget * widget)
+{
+   int width  = gtk_widget_get_allocated_width (widget);
+   int height = gtk_widget_get_allocated_height (widget);
+   cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
+   cairo_rectangle (cr,
+                    0, 0,
+                    width, height);
+   cairo_fill (cr);
+}
+
+
 static void //  https://stackoverflow.com/a/36483677 
 _cairo_gdk_draw_pixbuf (cairo_t *cr, cairo_surface_t *source,
                         int src_x,   int src_y,

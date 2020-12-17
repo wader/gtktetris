@@ -117,18 +117,6 @@ gint keyboard_event_handler(GtkWidget *widget,
 }
 
 
-static void set_background_color (cairo_t * cr, GtkWidget * widget)
-{
-   int width  = gtk_widget_get_allocated_width (widget);
-   int height = gtk_widget_get_allocated_height (widget);
-   cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
-   cairo_rectangle (cr,
-                    0, 0,
-                    width, height);
-   cairo_fill (cr);
-}
-
-
 static gboolean
 game_area_draw_cb (GtkWidget * widget, gpointer compat, gpointer user_data)
 {

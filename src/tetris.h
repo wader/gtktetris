@@ -75,6 +75,7 @@ void game_set_pause();
 
 // draw.c
 void set_block(int x,int y,int color,int next);
+void set_background_color (cairo_t * cr, GtkWidget * widget);
 
 // highscore.c
 void read_highscore();
