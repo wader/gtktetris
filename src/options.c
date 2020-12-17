@@ -8,6 +8,29 @@ static GtkWidget * spin_noise_level;
 static GtkWidget * spin_noise_height;
 static GtkWidget * show_block_chk;
 
+
+/* returns a path that must be freed with g_free) */
+char * get_config_dir_file (const char * file)
+{
+#define EMPTY_STRING ""
+   char * config_home = NULL;
+   char * res = NULL;
+   config_home = getenv ("XDG_CONFIG_HOME");
+   if (!config_home) {
+      config_home = getenv ("HOME");
+      if (!config_home) {
+         config_home = EMPTY_STRING;
+      }
+   }
+   if (file) {
+      res = g_strconcat (config_home, "/gtktetris/", file, NULL);
+   } else {
+      res = g_strconcat (config_home, "/gtktetris", NULL);
+   }
+   return (res);
+}
+
+
 void options_defaults (void)
 {
    options.start_level = 0;

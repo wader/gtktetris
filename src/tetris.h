@@ -35,6 +35,7 @@ int next_block;
 int next_frame;
 
 // options.c
+char * get_config_dir_file (const char * file);
 void options_defaults (void);
 void options_read(void);
 void options_show_dialog (void);
@@ -70,7 +71,6 @@ void game_set_pause();
 
 // misc.c
 void set_block(int x,int y,int color,int next);
-char * get_config_dir_file (const char * file);
 
 // highscore.c
 void read_highscore();

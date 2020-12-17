@@ -4,8 +4,6 @@
 
 #include "tetris.h"
 
-#define EMPTY_STRING ""
-
 static void //  https://stackoverflow.com/a/36483677 
 _cairo_gdk_draw_pixbuf (cairo_t *cr, cairo_surface_t *source,
                         int src_x,   int src_y,
@@ -73,22 +71,3 @@ void set_block(int x,int y,int color,int next)
 }
 
 
-/* returns a path that must be freed with g_free) */
-char * get_config_dir_file (const char * file)
-{
-   char * config_home = NULL;
-   char * res = NULL;
-   config_home = getenv ("XDG_CONFIG_HOME");
-   if (!config_home) {
-      config_home = getenv ("HOME");
-      if (!config_home) {
-         config_home = EMPTY_STRING;
-      }
-   }
-   if (file) {
-      res = g_strconcat (config_home, "/gtktetris/", file, NULL);
-   } else {
-      res = g_strconcat (config_home, "/gtktetris", NULL);
-   }
-   return (res);
-}
