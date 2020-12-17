@@ -73,15 +73,6 @@ void set_block(int x,int y,int color,int next)
 }
 
 
-void set_label_with_color (GtkWidget * w, char * color, char * text)
-{
-   char * markup;
-   markup = g_markup_printf_escaped ("<span foreground=\"%s\">%s</span>",
-                                     color, text);
-   gtk_label_set_markup (GTK_LABEL (w), markup);
-   g_free (markup);
-}
-
 /* returns a path that must be freed with g_free) */
 char * get_config_dir_file (const char * file)
 {

@@ -45,6 +45,15 @@ gint timer;
 int level_speeds[NUM_LEVELS] = {1000,886,785,695,616,546,483,428,379,336,298,
 				264,234,207,183,162,144,127,113,100};	
 
+static void set_label_with_color (GtkWidget * w, char * color, char * text)
+{
+   char * markup;
+   markup = g_markup_printf_escaped ("<span foreground=\"%s\">%s</span>",
+                                     color, text);
+   gtk_label_set_markup (GTK_LABEL (w), markup);
+   g_free (markup);
+}
+
 void update_game_values()
 {
 	char dummy[20] = "";

@@ -70,7 +70,6 @@ void game_set_pause();
 
 // misc.c
 void set_block(int x,int y,int color,int next);
-void set_label_with_color (GtkWidget * w, char * color, char * text);
 char * get_config_dir_file (const char * file);
 
 // highscore.c
