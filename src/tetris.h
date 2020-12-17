@@ -3,9 +3,11 @@
 
 #include <gtk/gtk.h>
 #include "gtkcompat.h"
+#include <stdlib.h>
 
 #define MAX_X 10
 #define MAX_Y 18
+#define do_random(max) ( (int) ((max) * ((float)random() / RAND_MAX)) )
 
 extern int BLOCK_WIDTH;
 extern int BLOCK_HEIGHT;
@@ -68,7 +70,6 @@ void game_set_pause();
 
 // misc.c
 void set_block(int x,int y,int color,int next);
-int do_random(int max);
 void set_label_with_color (GtkWidget * w, char * color, char * text);
 char * get_config_dir_file (const char * file);
 

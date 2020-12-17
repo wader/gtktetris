@@ -1,4 +1,3 @@
-#include <stdlib.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <string.h>
@@ -73,12 +72,6 @@ void set_block(int x,int y,int color,int next)
    cairo_destroy (cr);
 }
 
-
-
-int do_random(int max)
-{
-	return max*((float)random()/RAND_MAX);
-}
 
 void set_label_with_color (GtkWidget * w, char * color, char * text)
 {
