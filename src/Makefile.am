@@ -4,7 +4,7 @@ AM_CPPFLAGS = @GTK_CFLAGS@
 
 bin_PROGRAMS = gtktetris
 
-gtktetris_SOURCES = misc.c \
+gtktetris_SOURCES = draw.c \
 	highscore.c \
 	tetris.c \
 	interface.c

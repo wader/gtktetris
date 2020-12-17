@@ -69,7 +69,7 @@ int game_loop();
 void game_over_init();
 void game_set_pause();
 
-// misc.c
+// draw.c
 void set_block(int x,int y,int color,int next);
 
 // highscore.c

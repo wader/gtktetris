@@ -1,7 +1,3 @@
-#include <unistd.h>
-#include <sys/types.h>
-#include <string.h>
-
 #include "tetris.h"
 
 static void //  https://stackoverflow.com/a/36483677 
@@ -69,5 +65,4 @@ void set_block(int x,int y,int color,int next)
 
    cairo_destroy (cr);
 }
-
 

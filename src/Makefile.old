@@ -1,5 +1,5 @@
 PROGRAM = gtktetris
-OBJS = misc.o highscore.o tetris.o options.o interface.o
+OBJS = draw.o highscore.o tetris.o options.o interface.o
 BIN_PATH = /usr/local/bin
 CC = gcc
 
