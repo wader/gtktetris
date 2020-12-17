@@ -51,7 +51,7 @@ int level_speeds[NUM_LEVELS] = {1000,886,785,695,616,546,483,428,379,336,298,
 static void set_label_with_color (GtkWidget * w, char * color, char * text)
 {
    char * markup;
-   markup = g_markup_printf_escaped ("<span foreground=\"%s\">%s</span>",
+   markup = g_markup_printf_escaped ("<b><span foreground=\"%s\">%s</span></b>",
                                      color, text);
    gtk_label_set_markup (GTK_LABEL (w), markup);
    g_free (markup);
@@ -66,7 +66,7 @@ void update_game_values()
 	snprintf (dummy, sizeof(dummy), "%d", current_level);
 	set_label_with_color (level_label2, "blue", dummy);
 	snprintf (dummy, sizeof(dummy), "%d", current_lines);
-	gtk_label_set_text (GTK_LABEL (lines_label2), dummy);
+	set_label_with_color (lines_label2, "green", dummy);
 }
 
 gint keyboard_event_handler(GtkWidget *widget,
@@ -640,6 +640,7 @@ int main(int argc,char *argv[])
   gtk_box_pack_start(GTK_BOX(right_side),lines_label1,FALSE,FALSE,3);
   
   lines_label2 = gtk_label_new("0");
+  set_label_with_color (lines_label2, "green", "0");
   gtk_label_set_justify(GTK_LABEL(lines_label2),GTK_JUSTIFY_RIGHT);
   gtk_widget_show(lines_label2);
   gtk_box_pack_start(GTK_BOX(right_side),lines_label2,FALSE,FALSE,3);
