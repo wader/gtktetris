@@ -58,11 +58,11 @@ void update_game_values()
 {
 	char dummy[20] = "";
 
-	sprintf(dummy,"%lu",current_score);
+	snprintf (dummy, sizeof(dummy), "%lu", current_score);
 	set_label_with_color (score_label2, "red", dummy);
-	sprintf(dummy,"%d",current_level);
+	snprintf (dummy, sizeof(dummy), "%d", current_level);
 	set_label_with_color (level_label2, "blue", dummy);
-	sprintf(dummy,"%d",current_lines);
+	snprintf (dummy, sizeof(dummy), "%d", current_lines);
 	gtk_label_set_text (GTK_LABEL (lines_label2), dummy);
 }
 
@@ -636,7 +636,7 @@ int main(int argc,char *argv[])
   gtk_widget_show(level_label1);
   gtk_box_pack_start(GTK_BOX(right_side),level_label1,FALSE,FALSE,3);
   
-  sprintf(dmmy,"%d",current_level);
+  snprintf (dmmy, sizeof(dmmy), "%d", current_level);
   level_label2 = gtk_label_new(dmmy);
   set_label_with_color (level_label2, "blue", dmmy);
   gtk_label_set_justify(GTK_LABEL(level_label2),GTK_JUSTIFY_RIGHT);
