@@ -4,7 +4,7 @@
  * For more information, please refer to <https://unlicense.org>
  */
 
-/** 2020-12-12 **/
+/** 2020-12-17 **/
 
 /*
  * gtkcompat.h, GTK2+ compatibility layer
@@ -24,6 +24,24 @@ special defines:
 	gtkcompat_widget_set_halign_left   (w)
 	gtkcompat_widget_set_halign_center (w)
 	gtkcompat_widget_set_halign_right  (w)
+*/
+
+/*
+GTKCOMPAT_DRAW_SIGNAL (gtk3="draw", gtk2="expose_event")
+---------------------
+ g_signal_connect (w, GTKCOMPAT_DRAW_SIGNAL, G_CALLBACK (w_draw_cb), NULL);
+ gboolean w_draw_cb (GtkWidget *w, gpointer compat, gpointer user_data)
+ {
+ #if GTK_CHECK_VERSION (3, 0, 0)
+    cairo_t * cr = (cairo_t *) compat;
+ #else // gtk2
+    //GdkEventExpose * event = (GdkEventExpose *) compat;
+    cairo_t * cr = gdk_cairo_create (gtk_widget_get_window (w));
+ #endif
+ #if GTK_MAJOR_VERSION == 2
+    cairo_destroy (cr);
+ #endif
+ }
 */
 
 #ifndef __GTKCOMPAT_H
@@ -135,6 +153,7 @@ extern "C"
 
 // GTK >= 3.0 -- applies to GTK3, GTK4...
 #if GTK_CHECK_VERSION (3, 0, 0)
+#define GTKCOMPAT_DRAW_SIGNAL "draw"
 #define gtkcompat_widget_set_halign_left(w)   gtk_widget_set_halign(GTK_WIDGET(w), GTK_ALIGN_START)
 #define gtkcompat_widget_set_halign_center(w) gtk_widget_set_halign(GTK_WIDGET(w), GTK_ALIGN_CENTER)
 #define gtkcompat_widget_set_halign_right(w)  gtk_widget_set_halign(GTK_WIDGET(w), GTK_ALIGN_END)
@@ -174,6 +193,7 @@ extern "C"
 
 // GTK < 3.0
 #if ! GTK_CHECK_VERSION (3, 0, 0)
+#define GTKCOMPAT_DRAW_SIGNAL "expose_event"
 #define gtk_box_new(ori,spacing) \
   ((ori == GTK_ORIENTATION_HORIZONTAL) ? gtk_hbox_new(FALSE,spacing) \
                                        : gtk_vbox_new(FALSE,spacing))

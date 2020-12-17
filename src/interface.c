@@ -127,11 +127,7 @@ static void set_background_color (cairo_t * cr, GtkWidget * widget)
 
 
 static gboolean
-#if GTK_CHECK_VERSION (3, 0, 0)
-game_area_draw_event (GtkWidget * widget, cairo_t * cr, gpointer user_data)
-#else // gtk2
-game_area_expose_event (GtkWidget * widget, GdkEventExpose * event, gpointer user_data)
-#endif
+game_area_draw_cb (GtkWidget * widget, gpointer compat, gpointer user_data)
 {
   if(!game_over)
     {
@@ -140,7 +136,10 @@ game_area_expose_event (GtkWidget * widget, GdkEventExpose * event, gpointer use
     }
   else
     {
-#if GTK_MAJOR_VERSION == 2
+#if GTK_CHECK_VERSION (3, 0, 0)
+      cairo_t * cr = (cairo_t *) compat;
+#else // gtk2
+      //GdkEventExpose * event = (GdkEventExpose *) compat;
       cairo_t * cr = gdk_cairo_create (gtk_widget_get_window (widget));
 #endif
       set_background_color (cr, widget);
@@ -152,13 +151,12 @@ game_area_expose_event (GtkWidget * widget, GdkEventExpose * event, gpointer use
 }
 
 static gboolean
-#if GTK_CHECK_VERSION (3, 0, 0)
-next_block_area_draw_event (GtkWidget * widget, cairo_t * cr, gpointer user_data)
-#else // gtk2
-next_block_area_expose_event (GtkWidget * widget, GdkEventExpose * event, gpointer user_data)
-#endif
+next_block_area_draw_cb (GtkWidget * widget, gpointer compat, gpointer user_data)
 {
-#if GTK_MAJOR_VERSION == 2
+#if GTK_CHECK_VERSION (3, 0, 0)
+	cairo_t * cr = (cairo_t *) compat;
+#else // gtk2
+	//GdkEventExpose * event = (GdkEventExpose *) compat;
 	cairo_t * cr = gdk_cairo_create (gtk_widget_get_window (widget));
 #endif
 	set_background_color (cr, widget);
@@ -592,13 +590,8 @@ int main(int argc,char *argv[])
   gtk_widget_set_size_request (GTK_WIDGET(game_area),
 			MAX_X*BLOCK_WIDTH,MAX_Y*BLOCK_HEIGHT);
 
-#if GTK_CHECK_VERSION (3, 0, 0)
-  g_signal_connect (game_area, "draw",
-                    G_CALLBACK (game_area_draw_event), NULL);
-#else // gtk2
-  g_signal_connect (game_area, "expose_event",
-                    G_CALLBACK (game_area_expose_event), NULL);
-#endif
+  g_signal_connect (game_area, GTKCOMPAT_DRAW_SIGNAL,
+                    G_CALLBACK (game_area_draw_cb), NULL);
   
   gtk_widget_set_events(game_area, GDK_EXPOSURE_MASK);
   gtk_container_add(GTK_CONTAINER(game_border),game_area);
@@ -620,13 +613,9 @@ int main(int argc,char *argv[])
   gtk_widget_set_size_request (GTK_WIDGET(next_block_area),
 			4*BLOCK_WIDTH,4*BLOCK_HEIGHT);
 
-#if GTK_CHECK_VERSION (3, 0, 0)
-  g_signal_connect (next_block_area, "draw",
-                    G_CALLBACK (next_block_area_draw_event), NULL);
-#else // gtk2
-  g_signal_connect (next_block_area, "expose_event",
-                    G_CALLBACK (next_block_area_expose_event), NULL);
-#endif
+  g_signal_connect (next_block_area, GTKCOMPAT_DRAW_SIGNAL,
+                    G_CALLBACK (next_block_area_draw_cb), NULL);
+
   gtk_widget_set_events(next_block_area, GDK_EXPOSURE_MASK);
   gtk_container_add(GTK_CONTAINER(next_block_border),next_block_area);
   
