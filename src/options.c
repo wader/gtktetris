@@ -91,7 +91,6 @@ static void settings_dialog_response_cb (GtkDialog * dialog,
       options.noise_height = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (spin_noise_height));
       options.show_next_block = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (show_block_chk));
       current_level = options.start_level;
-      update_game_values ();
       options_save ();
    }
 
