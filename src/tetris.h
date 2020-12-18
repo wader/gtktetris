@@ -3,7 +3,7 @@
  */
 
 #ifndef _TETRIS_H__
-#define _TETRIS_H_
+#define _TETRIS_H__
 
 #include <gtk/gtk.h>
 #include "gtkcompat.h"

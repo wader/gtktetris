@@ -247,7 +247,7 @@ void game_start_stop(GtkMenuItem     *widget,
       from_virtual();
       move_block(0,0,0);
       current_level = options.start_level;
-      update_game_values(0,current_level,0);
+      update_game_values();
       timer = g_timeout_add(level_speeds[current_level],(GSourceFunc)game_loop,NULL);
     }
   else
