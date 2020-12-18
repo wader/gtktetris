@@ -5,11 +5,12 @@ test -z "$AUTOMAKE"   && AUTOMAKE=automake
 test -z "$ACLOCAL"    && ACLOCAL=aclocal
 test -z "$AUTOCONF"   && AUTOCONF=autoconf
 test -z "$AUTOHEADER" && AUTOHEADER=autoheader
+test -z "$LIBTOOLIZE" && LIBTOOLIZE=$(which libtoolize glibtoolize | head -1)
 
 #set -x 
 
 #Get all required m4 macros required for configure
-libtoolize --copy --force || exit 1
+$LIBTOOLIZE --copy --force || exit 1
 $ACLOCAL -I m4 || exit 1
 
 #Generate config.h.in
