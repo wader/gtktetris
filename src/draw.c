@@ -19,11 +19,22 @@ void set_background_color (cairo_t * cr, GtkWidget * widget)
 
 
 static void //  https://stackoverflow.com/a/36483677 
-_cairo_gdk_draw_pixbuf (cairo_t *cr, cairo_surface_t *source,
+_cairo_gdk_draw_pixbuf (cairo_t *cr,
                         int src_x,   int src_y,
                         int dest_x,  int dest_y,
                         int width,   int height)
 {
+   // This a special case where we don't need
+   //   the whole pixbuf, just a region.
+   // It's a bit complicated with cairo,
+   //   so we need the source's surface to perform operations.
+   // See
+   //   https://developer.gnome.org/gdk2/stable/gdk2-Drawing-Primitives.html#gdk-draw-drawable
+   cairo_pattern_t * pattern;
+   cairo_surface_t * source;
+   pattern = cairo_get_source (cr);
+   cairo_pattern_get_surface (pattern, &source);
+
    cairo_save (cr);
 
    /* Move (0, 0) to the destination position */
@@ -60,23 +71,13 @@ void set_block(int x,int y,int color,int next)
    } else {
       gdkwin = gtk_widget_get_window (game_area);
    }
+
    cr = gdk_cairo_create (gdkwin);
    gdk_cairo_set_source_pixbuf (cr,
                                 blocks_pixbuf,
                                 src_x,
                                 src_y);
-
-   // This a special case where we don't need
-   //   the whole pixbuf, just a region.
-   // It's a bit complicated with cairo,
-   //   so we need the source's surface to perform operations.
-   // See
-   //   https://developer.gnome.org/gdk2/stable/gdk2-Drawing-Primitives.html#gdk-draw-drawable
-   cairo_pattern_t * pattern;
-   cairo_surface_t * surface;
-   pattern = cairo_get_source (cr);
-   cairo_pattern_get_surface (pattern, &surface);
-   _cairo_gdk_draw_pixbuf (cr, surface,
+   _cairo_gdk_draw_pixbuf (cr,
                            src_x,  src_y,
                            dest_x, dest_y,
                            width,  height);
