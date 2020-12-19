@@ -367,6 +367,11 @@ static void menu_settings_cb (GtkMenuItem *menuitem, gpointer user_data)
    options_show_dialog ();
 }
 
+static void main_window_destroy_cb (GtkWidget * w, gpointer   user_data)
+{ // terminate application
+   free_tetris_blocks ();
+   gtk_main_quit ();
+}
 
 int main(int argc,char *argv[])
 {
@@ -396,15 +401,10 @@ int main(int argc,char *argv[])
   gtk_init (&argc,&argv);
 
   // set Block (tetromino) images size...
+  blocks_xpm = blocks_xpm_tiny;
+  blocks_xpm = blocks_xpm_big;
   blocks_xpm = blocks_xpm_normal;
-  if (blocks_xpm == blocks_xpm_tiny) {
-     BLOCK_WIDTH = BLOCK_HEIGHT = 15;
-  } else if (blocks_xpm == blocks_xpm_normal) {
-     BLOCK_WIDTH = BLOCK_HEIGHT = 22;
-  } else if (blocks_xpm == blocks_xpm_big) {
-     BLOCK_WIDTH = BLOCK_HEIGHT = 33;
-  }
-  blocks_pixbuf = gdk_pixbuf_new_from_xpm_data (blocks_xpm);
+  load_tetris_blocks (blocks_xpm);
 
   //init game values
   options_defaults ();
@@ -436,7 +436,7 @@ int main(int argc,char *argv[])
   g_signal_connect (G_OBJECT (main_window), "key_press_event",
                     G_CALLBACK (keyboard_event_handler), NULL);
   g_signal_connect (G_OBJECT (main_window), "destroy",
-                    G_CALLBACK (gtk_main_quit), NULL);
+                    G_CALLBACK (main_window_destroy_cb), NULL);
 
   // vertical box
   v_box = gtk_box_new (GTK_ORIENTATION_VERTICAL,0);

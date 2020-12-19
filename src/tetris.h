@@ -25,7 +25,6 @@ extern GtkWidget * main_window;
 // global variables
 GtkWidget *game_area;
 GtkWidget *next_block_area;
-GdkPixbuf *blocks_pixbuf;
 int game_over;
 int game_pause;
 int current_x;
@@ -74,6 +73,8 @@ void game_over_init();
 void game_set_pause();
 
 // draw.c
+void load_tetris_blocks (const char ** source_blocks_pix);
+void free_tetris_blocks (void);
 void set_block(int x,int y,int color,int next);
 void set_background_color (cairo_t * cr, GtkWidget * widget);
 
