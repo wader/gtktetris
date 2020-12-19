@@ -15,8 +15,8 @@
 #include "tetris.xpm" /* tetris_xpm */
 
 #include "blocks.xpm"
-int BLOCK_WIDTH = 24;
-int BLOCK_HEIGHT = 24;
+int BLOCK_WIDTH;
+int BLOCK_HEIGHT;
 
 int game_play;
 char *pause_str[2]={"Pause\0","Resume\0"};
@@ -352,8 +352,54 @@ void show_help(GtkMenuItem     *menuitem,
 	gtk_widget_show_all (dialog);
 }
 
-void show_highscore_wrapper(GtkMenuItem     *menuitem,
-			    gpointer         user_data)
+void update_block_size (int startup)
+{
+   int resize = 0;
+   int resize_main_window = 0;
+
+   // determine if need to resize blocks and game area
+   if (startup) {
+      resize = 1;
+   } else {
+     if (BLOCK_HEIGHT != options.block_size) {
+        resize = 1;
+     }
+     if (options.block_size < BLOCK_HEIGHT) {
+        resize_main_window = 1;
+     }
+   }
+
+   BLOCK_HEIGHT = options.block_size;
+   BLOCK_WIDTH  = options.block_size;
+
+   if (resize)
+   {
+      // allocate blocks
+      free_tetris_blocks ();
+      load_tetris_blocks (blocks_xpm);
+
+      // set game_area and next_block_area size
+      gtk_widget_set_size_request (GTK_WIDGET (game_area),
+                                   MAX_X * BLOCK_WIDTH,
+                                   MAX_Y * BLOCK_HEIGHT);
+      gtk_widget_set_size_request (GTK_WIDGET (next_block_area),
+                                   4 * BLOCK_WIDTH,
+                                   4 * BLOCK_HEIGHT);
+      if (resize_main_window) {
+          // https://stackoverflow.com/questions/8903140/shrink-window-in-gtk-dynamically-when-content-shrinks
+          // GTK3: the automatic resizing of windows only happens 
+          //       when elements are too large to be drawn
+          // So we need to make the window smaller manually
+#if GTK_CHECK_VERSION (3, 0, 0)
+          gtk_window_resize (GTK_WINDOW (main_window),
+                             MAX_X * BLOCK_WIDTH + 4 * BLOCK_WIDTH,
+                             MAX_Y * BLOCK_HEIGHT);
+#endif
+      }
+   }
+}
+
+void show_highscore_wrapper(GtkMenuItem *menuitem, gpointer user_data)
 {
 	read_highscore();
 	show_highscore(0);
@@ -396,9 +442,6 @@ int main(int argc,char *argv[])
 
   // Initialize gtk
   gtk_init (&argc,&argv);
-
-  // allocate blocks
-  load_tetris_blocks (blocks_xpm);
 
   //init game values
   options_defaults ();
@@ -536,9 +579,6 @@ int main(int argc,char *argv[])
   
   // game_area
   game_area = gtk_drawing_area_new();
-  gtk_widget_set_size_request (GTK_WIDGET(game_area),
-                               MAX_X*BLOCK_WIDTH,
-                               MAX_Y*BLOCK_HEIGHT);
   g_signal_connect (game_area, GTKCOMPAT_DRAW_SIGNAL,
                     G_CALLBACK (game_area_draw_cb), NULL);
   gtk_widget_set_events (game_area, GDK_EXPOSURE_MASK);
@@ -550,9 +590,6 @@ int main(int argc,char *argv[])
   
   // next_block_area
   next_block_area = gtk_drawing_area_new();
-  gtk_widget_set_size_request (GTK_WIDGET(next_block_area),
-                               4*BLOCK_WIDTH,
-                               4*BLOCK_HEIGHT);
   g_signal_connect (next_block_area, GTKCOMPAT_DRAW_SIGNAL,
                     G_CALLBACK (next_block_area_draw_cb), NULL);
   gtk_widget_set_events(next_block_area, GDK_EXPOSURE_MASK);
@@ -608,7 +645,10 @@ int main(int argc,char *argv[])
   gtk_widget_set_sensitive (Pause_button,FALSE);
   
   gtk_window_add_accel_group (GTK_WINDOW (main_window), accel_group);
-  
+
+  // set block size and game area size
+  update_block_size (1);
+
   gtk_widget_show_all (main_window);
   
   gtk_main ();

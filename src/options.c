@@ -3,6 +3,7 @@
  */
 
 #include "tetris.h"
+#include <ctype.h>
 
 #define OPTIONS_FILE "config.ini"
 
@@ -11,7 +12,13 @@ static GtkWidget * spin_level;
 static GtkWidget * spin_noise_level;
 static GtkWidget * spin_noise_height;
 static GtkWidget * show_block_chk;
-
+static GtkWidget * block_size_combo;
+static const int block_sizes[] = {
+   16, 24, 32, 48, 64, 96, 128, 0
+};
+static const char * block_sizes_str[] = {
+   "16", "24", "32", "48", "64", "96", "128", NULL
+};
 
 /* returns a path that must be freed with g_free) */
 char * get_config_dir_file (const char * file)
@@ -41,6 +48,7 @@ void options_defaults (void)
    options.noise_level = 0;
    options.noise_height = 0;
    options.show_next_block = 1;
+   options.block_size = 24;
 }
 
 
@@ -54,6 +62,7 @@ static void options_save (void)
    g_key_file_set_integer (kfile, "settings", "noise_level", options.noise_level);
    g_key_file_set_integer (kfile, "settings", "noise_height", options.noise_height);
    g_key_file_set_integer (kfile, "settings", "show_next_block", options.show_next_block);
+   g_key_file_set_integer (kfile, "settings", "block_size", options.block_size);
    g_key_file_save_to_file (kfile, options_f, NULL);
    g_key_file_free (kfile);
 
@@ -74,6 +83,9 @@ void options_read (void)
       options.noise_level = g_key_file_get_integer (kfile, "settings", "noise_level", NULL);
       options.noise_height = g_key_file_get_integer (kfile, "settings", "noise_height", NULL);
       options.show_next_block = g_key_file_get_integer (kfile, "settings", "show_next_block", NULL);
+      options.block_size = g_key_file_get_integer (kfile, "settings", "block_size", NULL);
+      if (options.block_size < 16)
+          options.block_size = 24;
    }
    g_key_file_free (kfile);
 
@@ -86,12 +98,42 @@ static void settings_dialog_response_cb (GtkDialog * dialog,
 {
    if (response == GTK_RESPONSE_OK)
    {
+      // validate block size...
+      GtkWidget * entry = gtk_bin_get_child (GTK_BIN (block_size_combo));
+      const char * block_size = gtk_entry_get_text (GTK_ENTRY (entry));
+      const char * p = block_size;
+      int error = 0;
+      if (!*p) error = 1;
+      while (*p) {
+         if (!isdigit (*p)) {
+            error = 1;
+            break;
+         }
+         p++;
+      }
+      if (error) {
+         g_signal_stop_emission_by_name (dialog, "response");
+         GtkWidget * m;
+         m = gtk_message_dialog_new (GTK_WINDOW (dialog),
+                                     GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                     GTK_MESSAGE_ERROR,
+                                     GTK_BUTTONS_OK,
+                                     "Invalid block size");
+         g_signal_connect_swapped (m, "response", G_CALLBACK (gtk_widget_destroy), m);
+         gtk_window_set_title (GTK_WINDOW (m), "GTK Tetris");
+         gtk_widget_show (m);
+         return;
+      }
+
+      options.block_size = strtoll (block_size, NULL, 10);
       options.start_level = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (spin_level));
       options.noise_level = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (spin_noise_level));
       options.noise_height = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (spin_noise_height));
       options.show_next_block = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (show_block_chk));
       current_level = options.start_level;
       options_save ();
+
+      update_block_size (0);
    }
 
    gtk_widget_destroy (GTK_WIDGET (dialog));
@@ -100,12 +142,12 @@ static void settings_dialog_response_cb (GtkDialog * dialog,
 
 void options_show_dialog (void)
 {
-  GtkWidget * frame;
+  GtkWidget * frame, * hbox , * label;
   GtkWidget * vbox, * checkbox, * button;
   GtkWidget * vbox_table;
   GtkWidget * hbox_row[3], * labels[3], * spins[3];
   GtkAdjustment * adjs[3];
-  int i;
+  int i, combo_active = -1;
 
   settings_dialog = gtk_dialog_new ();
 
@@ -121,15 +163,50 @@ void options_show_dialog (void)
   vbox = gtk_dialog_get_content_area (GTK_DIALOG (settings_dialog));
   gtk_box_set_spacing (GTK_BOX (vbox), 2);
 
+  // -------------
   // vbox -> frame
   frame = gtk_frame_new ("Blocks");
   gtk_box_pack_start (GTK_BOX (vbox), frame, TRUE, TRUE, 0);
+
+  // vbox -> frame -> vbox
+  vbox_table = gtk_box_new (GTK_ORIENTATION_VERTICAL, 3);
+  gtk_container_set_border_width (GTK_CONTAINER (vbox_table), 5); // padding
+  gtk_container_add (GTK_CONTAINER (frame), vbox_table);
+
   checkbox = gtk_check_button_new_with_mnemonic ("_Show next block");
-  gtk_container_add (GTK_CONTAINER (frame), checkbox);
+  gtk_box_pack_start (GTK_BOX (vbox_table), checkbox, FALSE, FALSE, 0);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), options.show_next_block);
-  gtk_container_set_border_width (GTK_CONTAINER (checkbox),5);
   show_block_chk = checkbox;
 
+  // vbox -> frame -> vbox -> hbox
+  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  gtk_box_pack_start (GTK_BOX (vbox_table), hbox, FALSE, FALSE, 0);
+
+  label = gtk_label_new ("Block size: ");
+  gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
+
+  block_size_combo = gtk_combo_box_text_new_with_entry ();
+  gtk_box_pack_start (GTK_BOX (hbox), block_size_combo, FALSE, FALSE, 0);
+
+  for (i = 0; block_sizes_str[i]; i++)
+  {
+     gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (block_size_combo),
+                                     block_sizes_str[i]);
+     if (block_sizes[i] == options.block_size) {
+        combo_active = i;
+     }
+  }
+
+  if (combo_active != -1) {
+     gtk_combo_box_set_active (GTK_COMBO_BOX (block_size_combo), combo_active);
+  } else {
+     char buf[50];
+     GtkWidget * entry = gtk_bin_get_child (GTK_BIN (block_size_combo));
+     snprintf (buf, sizeof(buf), "%d", options.block_size);
+     gtk_entry_set_text (GTK_ENTRY (entry), buf);
+  }
+
+  // -------------
   // vbox -> frame
   frame = gtk_frame_new ("Level");
   gtk_box_pack_start (GTK_BOX (vbox), frame, TRUE, TRUE, 2);

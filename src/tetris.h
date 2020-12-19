@@ -49,6 +49,7 @@ struct Options
   int noise_level;
   int noise_height;
   int show_next_block;
+  int block_size;
 };
 
 struct Options options;
@@ -67,6 +68,7 @@ void game_init();
 void make_noise(int level,int height);
 
 // interface.c
+void update_block_size (int startup);
 void update_game_values();
 int game_loop();
 void game_over_init();
