@@ -26,6 +26,45 @@ void set_background_color (cairo_t * cr, GtkWidget * widget)
 }
 
 
+static void
+_cairo_resize_surface (cairo_t ** cr, float new_width, float new_height)
+{
+   cairo_t * new_cr;
+   cairo_surface_t * in_surface, * out_surface;
+   float in_w, in_h;
+   float scale_x, scale_y;
+
+   // get current width x height
+   in_surface = cairo_get_target (*cr);
+   in_w = cairo_image_surface_get_width (in_surface);
+   in_h = cairo_image_surface_get_height (in_surface);
+
+   if (in_w == new_width && in_h == new_height) {
+      // no need to resize
+      return;
+   }
+
+   // create a surface with the desired width x height
+   out_surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24,
+                                             new_width, new_height);
+   new_cr  = cairo_create (out_surface);
+   cairo_surface_destroy (out_surface);
+
+   // determine scale_x and scale_y
+   scale_x = new_width  / in_w;
+   scale_y = new_height / in_h;
+
+   // scale and draw on new_cr
+   cairo_scale (new_cr, scale_x, scale_y);
+   cairo_set_source_surface (new_cr, in_surface, 0, 0);
+   cairo_paint (new_cr);
+
+   // set new_cr as the new surface
+   cairo_destroy (*cr);
+   *cr = new_cr;
+}
+
+
 static void //  https://stackoverflow.com/a/36483677 
 _cairo_gdk_draw_pixbuf (cairo_t *cr,
                         int src_x,   int src_y,
@@ -63,18 +102,14 @@ _cairo_gdk_draw_pixbuf (cairo_t *cr,
 
 void load_tetris_blocks (const char ** source_blocks_pix)
 {
-   int orig_block_width, orig_block_height;
-   int src_x, src_y, dest_x, dest_y, width, height;
+   float orig_block_width, orig_block_height;
+   float src_x, src_y, dest_x, dest_y, width, height;
    int i;
    cairo_surface_t * surface;
 
    blocks_pixbuf = gdk_pixbuf_new_from_xpm_data (source_blocks_pix);
    orig_block_height = gdk_pixbuf_get_height (blocks_pixbuf);
    orig_block_width  = orig_block_height;
-
-   // set global variables
-   BLOCK_HEIGHT = orig_block_height;
-   BLOCK_WIDTH  = orig_block_width;
 
    // allocate memory for the blocks and extract them from the source pix
    for (i = 0; i < 8; i++)
@@ -96,6 +131,10 @@ void load_tetris_blocks (const char ** source_blocks_pix)
                               src_x,  src_y,
                               dest_x, dest_y,
                               width, height);
+      // may need to resize the block
+      _cairo_resize_surface (&cr_blocks[i],
+                            (float) BLOCK_WIDTH,
+                            (float) BLOCK_HEIGHT);
    }
 }
 

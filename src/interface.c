@@ -14,12 +14,9 @@
 #include "tetris.h"
 #include "tetris.xpm" /* tetris_xpm */
 
-#include "blocks_small.xpm"
-#include "blocks_normal.xpm"
-#include "blocks_big.xpm"
-const char ** blocks_xpm;
-int BLOCK_WIDTH;
-int BLOCK_HEIGHT;
+#include "blocks.xpm"
+int BLOCK_WIDTH = 24;
+int BLOCK_HEIGHT = 24;
 
 int game_play;
 char *pause_str[2]={"Pause\0","Resume\0"};
@@ -400,10 +397,7 @@ int main(int argc,char *argv[])
   // Initialize gtk
   gtk_init (&argc,&argv);
 
-  // set Block (tetromino) images size...
-  blocks_xpm = blocks_xpm_tiny;
-  blocks_xpm = blocks_xpm_big;
-  blocks_xpm = blocks_xpm_normal;
+  // allocate blocks
   load_tetris_blocks (blocks_xpm);
 
   //init game values
