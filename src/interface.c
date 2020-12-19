@@ -32,9 +32,9 @@ GtkWidget *level_label1;
 GtkWidget *level_label2;
 GtkWidget *lines_label1;
 GtkWidget *lines_label2;
-GtkWidget *menu_game_quick;
 GtkWidget *menu_game_start;
 GtkWidget *menu_game_stop;
+GtkWidget *menu_game_settings;
 GtkWidget *menu_game_quit;
 GtkWidget *menu_game_pause;
 GtkWidget *menu_game_show_next_block;
@@ -217,8 +217,8 @@ void game_over_init()
 
 	game_set_pause(GTK_WIDGET(menu_game_pause),NULL);
 	gtk_label_set_text (GTK_LABEL(Start_stop_button_label),start_stop_str[0]);
-	gtk_widget_set_sensitive(menu_game_quick,TRUE);
 	gtk_widget_set_sensitive(menu_game_start,TRUE);
+	gtk_widget_set_sensitive(menu_game_settings,TRUE);
 	gtk_widget_set_sensitive(menu_game_stop,FALSE);
 	gtk_widget_set_sensitive(Start_stop_button,TRUE);
 	gtk_widget_grab_default(Start_stop_button);
@@ -236,8 +236,8 @@ void game_start_stop(GtkMenuItem     *widget,
   if(game_play)
     {
       gtk_widget_set_sensitive(menu_game_stop,TRUE);
-      gtk_widget_set_sensitive(menu_game_quick,FALSE);
       gtk_widget_set_sensitive(menu_game_start,FALSE);
+      gtk_widget_set_sensitive(menu_game_settings,FALSE);
       gtk_widget_set_sensitive(Start_stop_button,TRUE);
       gtk_label_set_text (GTK_LABEL(Start_stop_button_label),start_stop_str[1]);
       gtk_widget_set_sensitive(Pause_button,TRUE);
@@ -460,15 +460,14 @@ int main(int argc,char *argv[])
   menu_game_menu=gtk_menu_new ();
   gtk_menu_item_set_submenu (GTK_MENU_ITEM (menu_game), menu_game_menu);
   
-  menu_game_quick = gtk_menu_item_new_with_mnemonic ("Start Game");
-  gtk_widget_show (menu_game_quick);
-  gtk_container_add (GTK_CONTAINER (menu_game_menu), menu_game_quick);
-  g_signal_connect ((gpointer) menu_game_quick, "activate",
-		    G_CALLBACK (game_start_stop),
-		    NULL);
-  gtk_widget_add_accelerator (menu_game_quick, "activate", accel_group,
-			      GDK_KEY_G, GDK_CONTROL_MASK,
-			      GTK_ACCEL_VISIBLE);
+  menu_game_start = gtk_menu_item_new_with_mnemonic ("Start Game");
+  gtk_widget_show (menu_game_start);
+  gtk_container_add (GTK_CONTAINER (menu_game_menu), menu_game_start);
+  g_signal_connect (menu_game_start, "activate",
+                    G_CALLBACK (game_start_stop), NULL);
+  gtk_widget_add_accelerator (menu_game_start, "activate", accel_group,
+                              GDK_KEY_G, GDK_CONTROL_MASK,
+                              GTK_ACCEL_VISIBLE);
   
   menu_game_stop = gtk_menu_item_new_with_mnemonic ("Stop Game");
   gtk_widget_show (menu_game_stop);
@@ -496,12 +495,12 @@ int main(int argc,char *argv[])
   gtk_container_add (GTK_CONTAINER (menu_game_menu), separatormenuitem1);
   gtk_widget_set_sensitive (separatormenuitem1, FALSE);
 
-  menu_game_start = gtk_menu_item_new_with_mnemonic ("Settings...");
-  gtk_widget_show (menu_game_start);
-  gtk_container_add (GTK_CONTAINER (menu_game_menu), menu_game_start);
-  g_signal_connect (menu_game_start, "activate",
+  menu_game_settings = gtk_menu_item_new_with_mnemonic ("Settings...");
+  gtk_widget_show (menu_game_settings);
+  gtk_container_add (GTK_CONTAINER (menu_game_menu), menu_game_settings);
+  g_signal_connect (menu_game_settings, "activate",
                     G_CALLBACK (menu_settings_cb), NULL);
-  gtk_widget_add_accelerator (menu_game_start, "activate",  accel_group,
+  gtk_widget_add_accelerator (menu_game_settings, "activate",  accel_group,
                               GDK_KEY_S, GDK_CONTROL_MASK,
                               GTK_ACCEL_VISIBLE);
 
