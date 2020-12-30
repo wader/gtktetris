@@ -10,7 +10,7 @@
 // block 0 = black / background
 // 1.....7 = block colors
 
-static cairo_t * cr_blocks[8] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL } ;
+static cairo_surface_t * tetris_block[8] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL } ;
 static GdkPixbuf * blocks_pixbuf;
 
 
@@ -27,17 +27,16 @@ void set_background_color (cairo_t * cr, GtkWidget * widget)
 
 
 static void
-_cairo_resize_surface (cairo_t ** cr, float new_width, float new_height)
+_cairo_resize_surface (cairo_surface_t ** in_surface, float new_width, float new_height)
 {
    cairo_t * new_cr;
-   cairo_surface_t * in_surface, * out_surface;
+   cairo_surface_t * out_surface;
    float in_w, in_h;
    float scale_x, scale_y;
 
    // get current width x height
-   in_surface = cairo_get_target (*cr);
-   in_w = cairo_image_surface_get_width (in_surface);
-   in_h = cairo_image_surface_get_height (in_surface);
+   in_w = cairo_image_surface_get_width (*in_surface);
+   in_h = cairo_image_surface_get_height (*in_surface);
 
    if (in_w == new_width && in_h == new_height) {
       // no need to resize
@@ -48,20 +47,20 @@ _cairo_resize_surface (cairo_t ** cr, float new_width, float new_height)
    out_surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24,
                                              new_width, new_height);
    new_cr  = cairo_create (out_surface);
-   cairo_surface_destroy (out_surface);
 
    // determine scale_x and scale_y
    scale_x = new_width  / in_w;
    scale_y = new_height / in_h;
 
-   // scale and draw on new_cr
+   // scale and draw on surface_out
    cairo_scale (new_cr, scale_x, scale_y);
-   cairo_set_source_surface (new_cr, in_surface, 0, 0);
+   cairo_set_source_surface (new_cr, *in_surface, 0, 0);
    cairo_paint (new_cr);
+   cairo_destroy (new_cr);
 
    // set new_cr as the new surface
-   cairo_destroy (*cr);
-   *cr = new_cr;
+   cairo_surface_destroy (*in_surface);
+   *in_surface = out_surface;
 }
 
 
@@ -105,7 +104,7 @@ void load_tetris_blocks (const char ** source_blocks_pix)
    float orig_block_width, orig_block_height;
    float src_x, src_y, dest_x, dest_y, width, height;
    int i;
-   cairo_surface_t * surface;
+   cairo_t * cr;
 
    blocks_pixbuf = gdk_pixbuf_new_from_xpm_data (source_blocks_pix);
    orig_block_height = gdk_pixbuf_get_height (blocks_pixbuf);
@@ -121,20 +120,21 @@ void load_tetris_blocks (const char ** source_blocks_pix)
       dest_x = 0;
       dest_y = 0;
 
-      surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, width, height);
-      cr_blocks[i] = cairo_create (surface);
-      cairo_surface_destroy (surface);
+      tetris_block[i] = cairo_image_surface_create (CAIRO_FORMAT_RGB24, width, height);
+      cr = cairo_create (tetris_block[i]);
 
-      gdk_cairo_set_source_pixbuf (cr_blocks[i], blocks_pixbuf,
+      gdk_cairo_set_source_pixbuf (cr, blocks_pixbuf,
                                    src_x, src_y);
-      _cairo_gdk_draw_pixbuf (cr_blocks[i],
+      _cairo_gdk_draw_pixbuf (cr,
                               src_x,  src_y,
                               dest_x, dest_y,
                               width, height);
       // may need to resize the block
-      _cairo_resize_surface (&cr_blocks[i],
+      _cairo_resize_surface (&tetris_block[i],
                             (float) BLOCK_WIDTH,
                             (float) BLOCK_HEIGHT);
+
+      cairo_destroy (cr);
    }
 }
 
@@ -144,9 +144,9 @@ void free_tetris_blocks (void)
    int i;
    for (i = 0; i < 8; i++)
    {
-      if (cr_blocks[i]) {
-         cairo_destroy (cr_blocks[i]);
-         cr_blocks[i] = NULL;
+      if (tetris_block[i]) {
+         cairo_surface_destroy (tetris_block[i]);
+         tetris_block[i] = NULL;
       }
    }
 }
@@ -169,12 +169,8 @@ void set_block(int x,int y,int color,int next)
 
    cr = gdk_cairo_create (gdkwin);
 
-   // get surface from cr_blocks[color]
-   cairo_surface_t * source;
-   source = cairo_get_target (cr_blocks[color]);
-
    // draw on target x,y. source already has correct width and height
-   cairo_set_source_surface (cr, source, dest_x, dest_y);
+   cairo_set_source_surface (cr, tetris_block[color], dest_x, dest_y);
    cairo_paint (cr);
 
    cairo_destroy (cr);
