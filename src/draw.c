@@ -7,7 +7,7 @@
 #include "tetris.h"
 
 // blocks.xpm contains 8 blocks in a single img - 8 colors
-// block 0 = black / background
+// block 0 = black / background .. ignored
 // 1.....7 = block colors
 
 static cairo_surface_t * tetris_block[8] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL } ;
@@ -175,9 +175,17 @@ void set_block(int x,int y,int color,int next)
 
    cr = gdk_cairo_create (gdkwin);
 
-   // draw on target x,y. source already has correct width and height
-   cairo_set_source_surface (cr, tetris_block[color], dest_x, dest_y);
-   cairo_paint (cr);
+   // need to avoid cairo_set_source_surface() as much as possible
+   //   https://stackoverflow.com/questions/15773965/how-to-fast-redrawing-an-image-buffer
+   if (color == 0) {
+      cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
+      cairo_rectangle (cr, dest_x, dest_y, BLOCK_WIDTH, BLOCK_HEIGHT);
+      cairo_fill (cr);
+   } else {
+      // draw on target x,y. source already has correct width and height
+      cairo_set_source_surface (cr, tetris_block[color], dest_x, dest_y);
+      cairo_paint (cr);
+   }
 
    cairo_destroy (cr);
 }
