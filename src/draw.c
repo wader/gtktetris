@@ -27,12 +27,12 @@ void set_background_color (cairo_t * cr, GtkWidget * widget)
 
 
 static void
-_cairo_resize_surface (cairo_surface_t ** in_surface, float new_width, float new_height)
+_cairo_resize_surface (cairo_surface_t ** in_surface, int new_width, int new_height)
 {
    cairo_t * new_cr;
    cairo_surface_t * out_surface;
-   float in_w, in_h;
-   float scale_x, scale_y;
+   int in_w, in_h;
+   double scale_x, scale_y;
 
    // get current width x height
    in_w = cairo_image_surface_get_width (*in_surface);
@@ -49,8 +49,8 @@ _cairo_resize_surface (cairo_surface_t ** in_surface, float new_width, float new
    new_cr  = cairo_create (out_surface);
 
    // determine scale_x and scale_y
-   scale_x = new_width  / in_w;
-   scale_y = new_height / in_h;
+   scale_x = (double) new_width  / (double) in_w;
+   scale_y = (double) new_height / (double) in_h;
 
    // scale and draw on surface_out
    cairo_scale (new_cr, scale_x, scale_y);
@@ -130,9 +130,7 @@ void load_tetris_blocks (const char ** source_blocks_pix)
                               dest_x, dest_y,
                               width, height);
       // may need to resize the block
-      _cairo_resize_surface (&tetris_block[i],
-                            (float) BLOCK_WIDTH,
-                            (float) BLOCK_HEIGHT);
+      _cairo_resize_surface (&tetris_block[i], BLOCK_WIDTH, BLOCK_HEIGHT);
 
       cairo_destroy (cr);
    }
