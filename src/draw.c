@@ -31,6 +31,7 @@ _cairo_resize_surface (cairo_surface_t ** in_surface, int new_width, int new_hei
 {
    cairo_t * new_cr;
    cairo_surface_t * out_surface;
+   cairo_format_t format;
    int in_w, in_h;
    double scale_x, scale_y;
 
@@ -44,21 +45,21 @@ _cairo_resize_surface (cairo_surface_t ** in_surface, int new_width, int new_hei
    }
 
    // create a surface with the desired width x height
-   out_surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24,
-                                             new_width, new_height);
+   format = cairo_image_surface_get_format (*in_surface);
+   out_surface = cairo_image_surface_create (format, new_width, new_height);
    new_cr  = cairo_create (out_surface);
 
    // determine scale_x and scale_y
    scale_x = (double) new_width  / (double) in_w;
    scale_y = (double) new_height / (double) in_h;
 
-   // scale and draw on surface_out
+   // scale and draw on out_surface
    cairo_scale (new_cr, scale_x, scale_y);
    cairo_set_source_surface (new_cr, *in_surface, 0, 0);
    cairo_paint (new_cr);
    cairo_destroy (new_cr);
 
-   // set new_cr as the new surface
+   // set out_surface as the new surface
    cairo_surface_destroy (*in_surface);
    *in_surface = out_surface;
 }
@@ -105,10 +106,17 @@ void load_tetris_blocks (const char ** source_blocks_pix)
    float src_x, src_y, dest_x, dest_y, width, height;
    int i;
    cairo_t * cr;
+   cairo_format_t format;
 
    blocks_pixbuf = gdk_pixbuf_new_from_xpm_data (source_blocks_pix);
    orig_block_height = gdk_pixbuf_get_height (blocks_pixbuf);
    orig_block_width  = orig_block_height;
+
+   if (gdk_pixbuf_get_n_channels (blocks_pixbuf) == 3) {
+      format = CAIRO_FORMAT_RGB24;
+   } else {
+      format = CAIRO_FORMAT_ARGB32;
+   }
 
    // allocate memory for the blocks and extract them from the source pix
    for (i = 0; i < 8; i++)
@@ -120,7 +128,7 @@ void load_tetris_blocks (const char ** source_blocks_pix)
       dest_x = 0;
       dest_y = 0;
 
-      tetris_block[i] = cairo_image_surface_create (CAIRO_FORMAT_RGB24, width, height);
+      tetris_block[i] = cairo_image_surface_create (format, width, height);
       cr = cairo_create (tetris_block[i]);
 
       gdk_cairo_set_source_pixbuf (cr, blocks_pixbuf,
