@@ -399,11 +399,6 @@ void update_block_size (int startup)
    }
 }
 
-void show_highscore_wrapper(GtkMenuItem *menuitem, gpointer user_data)
-{
-	read_highscore();
-	show_highscore(0);
-}
 
 static void menu_settings_cb (GtkMenuItem *menuitem, gpointer user_data)
 {
@@ -563,7 +558,7 @@ int main(int argc,char *argv[])
   high_scores1 = gtk_menu_item_new_with_mnemonic ("High-scores");
   gtk_container_add (GTK_CONTAINER (menu_help_menu), high_scores1);
   g_signal_connect (high_scores1, "activate",
-                    G_CALLBACK (show_highscore_wrapper), NULL);
+                    G_CALLBACK (show_highscore_dlg), NULL);
 
   separator_menu_item = gtk_menu_item_new ();
   gtk_container_add (GTK_CONTAINER (menu_help_menu), separator_menu_item);

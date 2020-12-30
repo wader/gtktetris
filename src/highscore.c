@@ -43,11 +43,13 @@ void write_highscore()
 }
 
 
-void show_highscore (int place)
+void show_highscore_dlg ()
 {
    GtkWidget * dialog;
    GtkWidget *vbox, * button;
    int i, temp;
+
+   read_highscore ();
 
    dialog = gtk_dialog_new ();
    gtk_window_set_title (GTK_WINDOW (dialog), "Highscores");

@@ -83,8 +83,7 @@ void set_background_color (cairo_t * cr, GtkWidget * widget);
 // highscore.c
 void read_highscore();
 void write_highscore();
-void show_highscore(int place);
-void check_highscore();
+void show_highscore_dlg();
 int addto_highscore(char *name,long score, int level, int lines);
 
 #endif
