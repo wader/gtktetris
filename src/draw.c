@@ -163,6 +163,7 @@ void set_block(int x,int y,int color,int next)
    int dest_x, dest_y;
    cairo_t * cr;
    GdkWindow * gdkwin;
+   double line_width;
 
    dest_x = x*BLOCK_WIDTH;
    dest_y = y*BLOCK_HEIGHT;
@@ -177,10 +178,26 @@ void set_block(int x,int y,int color,int next)
 
    // need to avoid cairo_set_source_surface() as much as possible
    //   https://stackoverflow.com/questions/15773965/how-to-fast-redrawing-an-image-buffer
-   if (color == 0) {
+   if (color == 0)
+   {
       cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
       cairo_rectangle (cr, dest_x, dest_y, BLOCK_WIDTH, BLOCK_HEIGHT);
       cairo_fill (cr);
+
+      if (options.show_grid && !next)
+      {  // show grid only in game_area
+         // line width 1 = 32x32
+         line_width = (double) BLOCK_WIDTH / 32.0;
+         cairo_set_source_rgb (cr, 0.2, 0.2, 0.2);
+         cairo_set_line_width (cr, line_width);
+
+         cairo_rectangle (cr,
+                          dest_x + line_width,
+                          dest_y + line_width,
+                          BLOCK_WIDTH - (line_width*2),
+                          BLOCK_WIDTH - (line_width*2));
+         cairo_stroke (cr);
+      }
    } else {
       // draw on target x,y. source already has correct width and height
       cairo_set_source_surface (cr, tetris_block[color], dest_x, dest_y);

@@ -12,6 +12,7 @@ static GtkWidget * spin_level;
 static GtkWidget * spin_noise_level;
 static GtkWidget * spin_noise_height;
 static GtkWidget * show_block_chk;
+static GtkWidget * show_grid_chk;
 static GtkWidget * block_size_combo;
 static const int block_sizes[] = {
    16, 24, 32, 48, 64, 96, 128, 0
@@ -48,6 +49,7 @@ void options_defaults (void)
    options.noise_level = 0;
    options.noise_height = 0;
    options.show_next_block = 1;
+   options.show_grid = 0;
    options.block_size = 24;
 }
 
@@ -62,6 +64,7 @@ static void options_save (void)
    g_key_file_set_integer (kfile, "settings", "noise_level", options.noise_level);
    g_key_file_set_integer (kfile, "settings", "noise_height", options.noise_height);
    g_key_file_set_integer (kfile, "settings", "show_next_block", options.show_next_block);
+   g_key_file_set_integer (kfile, "settings", "show_grid", options.show_grid);
    g_key_file_set_integer (kfile, "settings", "block_size", options.block_size);
    g_key_file_save_to_file (kfile, options_f, NULL);
    g_key_file_free (kfile);
@@ -83,6 +86,7 @@ void options_read (void)
       options.noise_level = g_key_file_get_integer (kfile, "settings", "noise_level", NULL);
       options.noise_height = g_key_file_get_integer (kfile, "settings", "noise_height", NULL);
       options.show_next_block = g_key_file_get_integer (kfile, "settings", "show_next_block", NULL);
+      options.show_grid = g_key_file_get_integer (kfile, "settings", "show_grid", NULL);
       options.block_size = g_key_file_get_integer (kfile, "settings", "block_size", NULL);
       if (options.block_size < 16)
           options.block_size = 24;
@@ -130,6 +134,7 @@ static void settings_dialog_response_cb (GtkDialog * dialog,
       options.noise_level = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (spin_noise_level));
       options.noise_height = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (spin_noise_height));
       options.show_next_block = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (show_block_chk));
+      options.show_grid = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (show_grid_chk));
       current_level = options.start_level;
       options_save ();
 
@@ -169,14 +174,19 @@ void options_show_dialog (void)
   gtk_box_pack_start (GTK_BOX (vbox), frame, TRUE, TRUE, 0);
 
   // vbox -> frame -> vbox
-  vbox_table = gtk_box_new (GTK_ORIENTATION_VERTICAL, 3);
+  vbox_table = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
   gtk_container_set_border_width (GTK_CONTAINER (vbox_table), 5); // padding
   gtk_container_add (GTK_CONTAINER (frame), vbox_table);
 
-  checkbox = gtk_check_button_new_with_mnemonic ("_Show next block");
+  checkbox = gtk_check_button_new_with_mnemonic ("Show _next block");
   gtk_box_pack_start (GTK_BOX (vbox_table), checkbox, FALSE, FALSE, 0);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), options.show_next_block);
   show_block_chk = checkbox;
+
+  checkbox = gtk_check_button_new_with_mnemonic ("Show _grid");
+  gtk_box_pack_start (GTK_BOX (vbox_table), checkbox, FALSE, FALSE, 0);
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), options.show_grid);
+  show_grid_chk = checkbox;
 
   // vbox -> frame -> vbox -> hbox
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);

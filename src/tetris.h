@@ -49,6 +49,7 @@ struct Options
   int noise_level;
   int noise_height;
   int show_next_block;
+  int show_grid;
   int block_size;
 };
 
