@@ -51,6 +51,7 @@ struct Options
   int show_next_block;
   int show_grid;
   int block_size;
+  int block_style;
 };
 
 struct Options options;

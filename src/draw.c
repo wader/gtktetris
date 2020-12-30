@@ -6,12 +6,36 @@
 
 #include "tetris.h"
 
-// blocks.xpm contains 8 blocks in a single img - 8 colors
-// block 0 = black / background .. ignored
-// 1.....7 = block colors
+/*
+ There are 2 block styles
+ 1 - use true images... blocks.xpm
+ 2 - draw block colors using a RGB source surface
+     also draw block "borders"
+
+ blocks.xpm contains 8 blocks in a single img - 8 colors
+ block 0 = black / background .. ignored
+ 1.....7 = block colors
+*/
 
 static cairo_surface_t * tetris_block[8] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL } ;
 static GdkPixbuf * blocks_pixbuf;
+
+
+// this is for set_block()
+//       block_style 2      palette N rbg
+static const int block_color_rgb[2][8][3] =
+{
+   {
+      { 0,   0,   0   }, /* 0 black  */
+      { 97,  97,  213 }, /* 1 blue   */
+      { 97,  209, 98  }, /* 2 green  */
+      { 212, 97,  98  }, /* 3 redish */
+      { 217, 217, 218 }, /* 4 white  */
+      { 212, 97,  213 }, /* 5 purple */
+      { 97,  204, 203 }, /* 6 cyan   */
+      { 212, 212, 98  }, /* 7 yellow */
+   },
+};
 
 
 void set_background_color (cairo_t * cr, GtkWidget * widget)
@@ -164,6 +188,8 @@ void set_block(int x,int y,int color,int next)
    cairo_t * cr;
    GdkWindow * gdkwin;
    double line_width;
+   double r, g, b;
+   gboolean draw_grid;
 
    dest_x = x*BLOCK_WIDTH;
    dest_y = y*BLOCK_HEIGHT;
@@ -179,29 +205,52 @@ void set_block(int x,int y,int color,int next)
    // need to avoid cairo_set_source_surface() as much as possible
    //   https://stackoverflow.com/questions/15773965/how-to-fast-redrawing-an-image-buffer
    if (color == 0)
-   {
+   { // black
       cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
       cairo_rectangle (cr, dest_x, dest_y, BLOCK_WIDTH, BLOCK_HEIGHT);
       cairo_fill (cr);
-
-      if (options.show_grid && !next)
-      {  // show grid only in game_area
-         // line width 1 = 32x32
-         line_width = (double) BLOCK_WIDTH / 32.0;
-         cairo_set_source_rgb (cr, 0.2, 0.2, 0.2);
-         cairo_set_line_width (cr, line_width);
-
-         cairo_rectangle (cr,
-                          dest_x + line_width,
-                          dest_y + line_width,
-                          BLOCK_WIDTH - (line_width*2),
-                          BLOCK_WIDTH - (line_width*2));
-         cairo_stroke (cr);
-      }
    } else {
-      // draw on target x,y. source already has correct width and height
-      cairo_set_source_surface (cr, tetris_block[color], dest_x, dest_y);
-      cairo_paint (cr);
+      if (options.block_style == 1) {
+         // use blocks from pixbuf
+         // draw on target x,y. source already has correct width and height
+         cairo_set_source_surface (cr, tetris_block[color], dest_x, dest_y);
+         cairo_paint (cr);
+      } else {
+         // draw rgb blocks
+         r = (double) block_color_rgb[0][color][0] / 255.0;
+         g = (double) block_color_rgb[0][color][1] / 255.0;
+         b = (double) block_color_rgb[0][color][2] / 255.0;
+         cairo_set_source_rgb (cr, r, g, b);
+         cairo_rectangle (cr, dest_x, dest_y, BLOCK_WIDTH, BLOCK_HEIGHT);
+         cairo_fill (cr);
+      }
+   }
+
+   draw_grid = FALSE;
+   if (color == 0 && options.show_grid && !next) {
+      // show grid only in game_area
+      draw_grid = TRUE;
+      cairo_set_source_rgb (cr, 0.2, 0.2, 0.2);
+   }
+   if (color != 0 && options.block_style != 1) {
+      // not exactly a grid, just the block border
+      // otherwise there is no block "border"
+      draw_grid = TRUE;
+      cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
+   }
+
+   if (draw_grid == TRUE)
+   {
+      // line width 1 = 32x32
+      line_width = (double) BLOCK_WIDTH / 32.0;
+      cairo_set_line_width (cr, line_width);
+
+      cairo_rectangle (cr,
+                       dest_x + line_width,
+                       dest_y + line_width,
+                       BLOCK_WIDTH - (line_width*2),
+                       BLOCK_WIDTH - (line_width*2));
+      cairo_stroke (cr);
    }
 
    cairo_destroy (cr);

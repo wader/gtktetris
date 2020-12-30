@@ -14,6 +14,8 @@ static GtkWidget * spin_noise_height;
 static GtkWidget * show_block_chk;
 static GtkWidget * show_grid_chk;
 static GtkWidget * block_size_combo;
+static GtkWidget * radio_style1;
+static GtkWidget * radio_style2;
 static const int block_sizes[] = {
    16, 24, 32, 48, 64, 96, 128, 0
 };
@@ -51,6 +53,7 @@ void options_defaults (void)
    options.show_next_block = 1;
    options.show_grid = 0;
    options.block_size = 24;
+   options.block_style = 1;
 }
 
 
@@ -66,6 +69,7 @@ static void options_save (void)
    g_key_file_set_integer (kfile, "settings", "show_next_block", options.show_next_block);
    g_key_file_set_integer (kfile, "settings", "show_grid", options.show_grid);
    g_key_file_set_integer (kfile, "settings", "block_size", options.block_size);
+   g_key_file_set_integer (kfile, "settings", "block_style", options.block_style);
    g_key_file_save_to_file (kfile, options_f, NULL);
    g_key_file_free (kfile);
 
@@ -88,8 +92,13 @@ void options_read (void)
       options.show_next_block = g_key_file_get_integer (kfile, "settings", "show_next_block", NULL);
       options.show_grid = g_key_file_get_integer (kfile, "settings", "show_grid", NULL);
       options.block_size = g_key_file_get_integer (kfile, "settings", "block_size", NULL);
+      if (g_key_file_has_key (kfile, "settings", "block_style", NULL)) {
+         options.block_style = g_key_file_get_integer (kfile, "settings", "block_style", NULL);
+      }
       if (options.block_size < 16)
           options.block_size = 24;
+      if (options.block_style != 1 && options.block_style != 2)
+          options.block_style = 1;
    }
    g_key_file_free (kfile);
 
@@ -135,6 +144,11 @@ static void settings_dialog_response_cb (GtkDialog * dialog,
       options.noise_height = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (spin_noise_height));
       options.show_next_block = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (show_block_chk));
       options.show_grid = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (show_grid_chk));
+      if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (radio_style1))) {
+         options.block_style = 1;
+      } else {
+         options.block_style = 2;
+      }
       current_level = options.start_level;
       options_save ();
 
@@ -147,7 +161,8 @@ static void settings_dialog_response_cb (GtkDialog * dialog,
 
 void options_show_dialog (void)
 {
-  GtkWidget * frame, * hbox , * label;
+  GtkWidget * frame, * hbox, * label, * radio;
+  GSList * radio_group;
   GtkWidget * vbox, * checkbox, * button;
   GtkWidget * vbox_table;
   GtkWidget * hbox_row[3], * labels[3], * spins[3];
@@ -214,6 +229,23 @@ void options_show_dialog (void)
      GtkWidget * entry = gtk_bin_get_child (GTK_BIN (block_size_combo));
      snprintf (buf, sizeof(buf), "%d", options.block_size);
      gtk_entry_set_text (GTK_ENTRY (entry), buf);
+  }
+
+  // vbox -> frame -> vbox -> hbox
+  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 30);
+  gtk_box_pack_start (GTK_BOX (vbox_table), hbox, FALSE, FALSE, 0);
+
+  radio = gtk_radio_button_new_with_mnemonic (NULL, "Style _1");
+  gtk_box_pack_start (GTK_BOX (hbox), radio, FALSE, FALSE, 0);
+  radio_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (radio));
+  radio_style1 = radio;
+
+  radio = gtk_radio_button_new_with_mnemonic (radio_group, "Style _2");
+  gtk_box_pack_start (GTK_BOX (hbox), radio, FALSE, FALSE, 0);
+  radio_style2 = radio;
+
+  if (options.block_style != 1) {
+     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (radio_style2), TRUE);
   }
 
   // -------------
