@@ -1,5 +1,5 @@
 PROGRAM = gtktetris
-OBJS = draw.o highscore.o tetris.o options.o interface.o
+OBJS = draw.o highscore.o tetris.o options.o interface.o main.o
 BIN_PATH = /usr/local/bin
 CC = gcc
 
@@ -8,6 +8,8 @@ LIBS = `pkg-config gtk+-2.0 --libs`
 
 all: $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) -o $(PROGRAM) $(LIBS)
+
+strip:
 	strip $(PROGRAM)
 
 clean: 

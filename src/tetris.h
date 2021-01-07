@@ -70,6 +70,7 @@ void game_init();
 void make_noise(int level,int height);
 
 // interface.c
+void create_main_window (void);
 void update_block_size (int startup);
 void update_game_values();
 int game_loop();

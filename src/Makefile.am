@@ -8,7 +8,8 @@ gtktetris_SOURCES = draw.c \
 	highscore.c \
 	tetris.c \
 	interface.c \
-	options.c
+	options.c \
+	main.c
 
 gtktetris_LDADD = @GTK_LIBS@
 

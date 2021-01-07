@@ -3,8 +3,6 @@
  * 
  */
 
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <unistd.h>
 #include <string.h>
 #include <stdio.h>
@@ -411,7 +409,7 @@ static void main_window_destroy_cb (GtkWidget * w, gpointer   user_data)
    gtk_main_quit ();
 }
 
-int main(int argc,char *argv[])
+void create_main_window (void)
 {
   char dmmy[20];
   GtkWidget *v_box;
@@ -427,20 +425,6 @@ int main(int argc,char *argv[])
   GtkWidget *high_scores1;
   GtkWidget *about1;
   GtkAccelGroup* accel_group;
-
-  // make sure config dir exists
-  char * config_dir = get_config_dir_file (NULL);
-  if (access (config_dir, F_OK) != 0) {
-     mkdir (config_dir, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-  }
-  g_free (config_dir);
-
-  // Initialize gtk
-  gtk_init (&argc,&argv);
-
-  //init game values
-  options_defaults ();
-  options_read ();
 
   game_play=FALSE;
   game_over = TRUE;
@@ -645,8 +629,5 @@ int main(int argc,char *argv[])
   update_block_size (1);
 
   gtk_widget_show_all (main_window);
-  
-  gtk_main ();
-  return 0;
 }
 
