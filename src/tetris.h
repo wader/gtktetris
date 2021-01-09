@@ -88,5 +88,6 @@ void read_highscore();
 void write_highscore();
 void show_highscore_dlg();
 int addto_highscore(char *name,long score, int level, int lines);
+long get_hiscore (void);
 
 #endif

@@ -23,6 +23,7 @@ GtkWidget * main_window;
 
 GtkWidget *score_label1;
 GtkWidget *score_label2;
+GtkWidget *hiscore_label;
 GtkWidget *level_label1;
 GtkWidget *level_label2;
 GtkWidget *lines_label1;
@@ -62,6 +63,8 @@ void update_game_values()
 	set_label_with_color (level_label2, "blue", dummy);
 	snprintf (dummy, sizeof(dummy), "%d", current_lines);
 	set_label_with_color (lines_label2, "green", dummy);
+	snprintf (dummy, sizeof(dummy), "%ld", get_hiscore ());
+	set_label_with_color (hiscore_label, "black", dummy);
 }
 
 gint keyboard_event_handler(GtkWidget *widget,
@@ -198,12 +201,15 @@ void game_set_pause(GtkWidget    *menuitem,
 void game_over_init()
 {
 	int high_dummy;
-	read_highscore();
+	char hscr[30];
 	if(current_score && (high_dummy = addto_highscore((char *)getenv("USER"),current_score,current_level,current_lines)))
 	{
 		write_highscore();
 	}
-	
+
+	snprintf (hscr, sizeof(hscr), "%ld", get_hiscore ());
+	set_label_with_color (hiscore_label, "black", hscr);
+
 	game_over = TRUE;
 	game_play = FALSE;
 
@@ -423,7 +429,7 @@ void create_main_window (void)
   GtkWidget *menu_help_menu;
   GtkWidget *help1;
   GtkWidget *high_scores1;
-  GtkWidget *about1;
+  GtkWidget *about1, * label;
   GtkAccelGroup* accel_group;
 
   game_play=FALSE;
@@ -602,7 +608,15 @@ void create_main_window (void)
   set_label_with_color (lines_label2, "green", "0");
   gtk_label_set_justify(GTK_LABEL(lines_label2),GTK_JUSTIFY_RIGHT);
   gtk_box_pack_start(GTK_BOX(right_side),lines_label2,FALSE,FALSE,3);
-  
+
+  read_highscore ();
+  label = gtk_label_new ("High-score:");
+  gtk_box_pack_start (GTK_BOX(right_side), label, FALSE, FALSE, 3);
+  hiscore_label = gtk_label_new ("0");
+  snprintf (dmmy, sizeof(dmmy), "%ld", get_hiscore());
+  set_label_with_color (hiscore_label, "black", dmmy);
+  gtk_box_pack_start (GTK_BOX (right_side), hiscore_label, FALSE, FALSE, 3);
+
   //the game buttons
   //Start_stop
   Start_stop_button = gtk_button_new_with_label (start_stop_str[0]);

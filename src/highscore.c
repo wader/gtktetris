@@ -49,8 +49,6 @@ void show_highscore_dlg ()
    GtkWidget *vbox, * button;
    int i, temp;
 
-   read_highscore ();
-
    dialog = gtk_dialog_new ();
    gtk_window_set_title (GTK_WINDOW (dialog), "Highscores");
    gtk_window_set_transient_for (GTK_WINDOW (dialog), GTK_WINDOW (main_window));
@@ -161,4 +159,9 @@ int addto_highscore (char *name, long score, int level, int lines)
       highscore[place].lines = lines;
    }
    return (place+1);
+}
+
+long get_hiscore(void)
+{
+   return (highscore[0].score);
 }
