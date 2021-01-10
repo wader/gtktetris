@@ -21,13 +21,10 @@ char *pause_str[2]={"Pause\0","Resume\0"};
 char *start_stop_str [2] = { "Start\0", "Stop\0"};
 GtkWidget * main_window;
 
-GtkWidget *score_label1;
-GtkWidget *score_label2;
-GtkWidget *hiscore_label;
-GtkWidget *level_label1;
-GtkWidget *level_label2;
-GtkWidget *lines_label1;
-GtkWidget *lines_label2;
+GtkWidget * score_label;
+GtkWidget * hiscore_label;
+GtkWidget * level_label;
+GtkWidget * lines_label;
 GtkWidget *menu_game_start;
 GtkWidget *menu_game_stop;
 GtkWidget *menu_game_settings;
@@ -58,11 +55,11 @@ void update_game_values()
 	char dummy[20] = "";
 
 	snprintf (dummy, sizeof(dummy), "%lu", current_score);
-	set_label_with_color (score_label2, "red", dummy);
+	set_label_with_color (score_label, "red", dummy);
 	snprintf (dummy, sizeof(dummy), "%d", current_level);
-	set_label_with_color (level_label2, "blue", dummy);
+	set_label_with_color (level_label, "blue", dummy);
 	snprintf (dummy, sizeof(dummy), "%d", current_lines);
-	set_label_with_color (lines_label2, "green", dummy);
+	set_label_with_color (lines_label, "green", dummy);
 	snprintf (dummy, sizeof(dummy), "%ld", get_hiscore ());
 	set_label_with_color (hiscore_label, "black", dummy);
 }
@@ -417,9 +414,9 @@ static void main_window_destroy_cb (GtkWidget * w, gpointer   user_data)
 
 void create_main_window (void)
 {
-  char dmmy[20];
   GtkWidget *v_box;
   GtkWidget *h_box;
+  GtkWidget * frame_labels, * vbox_labels, * box_space;
   GtkWidget *right_side;
   GtkWidget *menu_bar;
   GtkWidget *menu_game;
@@ -580,42 +577,41 @@ void create_main_window (void)
   gtk_widget_set_events(next_block_area, GDK_EXPOSURE_MASK);
   gtk_box_pack_start (GTK_BOX (right_side), next_block_area, FALSE, FALSE, 0);
   
-  // the score,level and lines labels
-  score_label1 = gtk_label_new("Score:");
-  gtk_label_set_justify(GTK_LABEL(score_label1),GTK_JUSTIFY_RIGHT);
-  gtk_box_pack_start(GTK_BOX(right_side),score_label1,FALSE,FALSE,3);
+  // the score, level and lines labels
+  frame_labels = gtk_frame_new (NULL);
+  gtk_box_pack_start (GTK_BOX (right_side), frame_labels, FALSE, FALSE, 5);
+  vbox_labels = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+  gtk_container_add (GTK_CONTAINER (frame_labels), vbox_labels);
+  gtk_container_set_border_width (GTK_CONTAINER (vbox_labels), 5); /* padding inside frame */
   
-  score_label2 = gtk_label_new("0");
-  set_label_with_color (score_label2, "red", "0");
-  gtk_label_set_justify(GTK_LABEL(score_label2),GTK_JUSTIFY_RIGHT);
-  gtk_box_pack_start(GTK_BOX(right_side),score_label2,FALSE,FALSE,3);
-  
-  level_label1 = gtk_label_new("Level:");
-  gtk_label_set_justify(GTK_LABEL(level_label1),GTK_JUSTIFY_RIGHT);
-  gtk_box_pack_start(GTK_BOX(right_side),level_label1,FALSE,FALSE,3);
-  
-  snprintf (dmmy, sizeof(dmmy), "%d", current_level);
-  level_label2 = gtk_label_new(dmmy);
-  set_label_with_color (level_label2, "blue", dmmy);
-  gtk_label_set_justify(GTK_LABEL(level_label2),GTK_JUSTIFY_RIGHT);
-  gtk_box_pack_start(GTK_BOX(right_side),level_label2,FALSE,FALSE,3);
-  
-  lines_label1 = gtk_label_new("Lines:");
-  gtk_label_set_justify(GTK_LABEL(lines_label1),GTK_JUSTIFY_RIGHT);
-  gtk_box_pack_start(GTK_BOX(right_side),lines_label1,FALSE,FALSE,3);
-  
-  lines_label2 = gtk_label_new("0");
-  set_label_with_color (lines_label2, "green", "0");
-  gtk_label_set_justify(GTK_LABEL(lines_label2),GTK_JUSTIFY_RIGHT);
-  gtk_box_pack_start(GTK_BOX(right_side),lines_label2,FALSE,FALSE,3);
+  label = gtk_label_new ("Score:");
+  gtk_box_pack_start (GTK_BOX (vbox_labels), label, FALSE, FALSE, 0);
+  score_label = gtk_label_new ("0");
+  gtk_box_pack_start (GTK_BOX (vbox_labels), score_label, FALSE, FALSE, 0);
 
-  read_highscore ();
+  box_space = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  gtk_box_pack_start (GTK_BOX (vbox_labels), box_space, FALSE, FALSE, 7);
+  
+  label = gtk_label_new("Level:");
+  gtk_box_pack_start (GTK_BOX (vbox_labels), label, FALSE, FALSE, 0);
+  level_label = gtk_label_new ("0");
+  gtk_box_pack_start (GTK_BOX (vbox_labels), level_label, FALSE, FALSE, 0);
+
+  box_space = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  gtk_box_pack_start (GTK_BOX (vbox_labels), box_space, FALSE, FALSE, 7);
+
+  label = gtk_label_new ("Lines:");
+  gtk_box_pack_start (GTK_BOX (vbox_labels), label, FALSE, FALSE, 0);
+  lines_label = gtk_label_new ("0");
+  gtk_box_pack_start (GTK_BOX (vbox_labels), lines_label, FALSE, FALSE, 0);
+
+  box_space = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  gtk_box_pack_start (GTK_BOX (vbox_labels), box_space, FALSE, FALSE, 7);
+
   label = gtk_label_new ("High-score:");
-  gtk_box_pack_start (GTK_BOX(right_side), label, FALSE, FALSE, 3);
+  gtk_box_pack_start (GTK_BOX (vbox_labels), label, FALSE, FALSE, 0);
   hiscore_label = gtk_label_new ("0");
-  snprintf (dmmy, sizeof(dmmy), "%ld", get_hiscore());
-  set_label_with_color (hiscore_label, "black", dmmy);
-  gtk_box_pack_start (GTK_BOX (right_side), hiscore_label, FALSE, FALSE, 3);
+  gtk_box_pack_start (GTK_BOX (vbox_labels), hiscore_label, FALSE, FALSE, 0);
 
   //the game buttons
   //Start_stop
@@ -641,6 +637,9 @@ void create_main_window (void)
 
   // set block size and game area size
   update_block_size (1);
+
+  read_highscore ();
+  update_game_values ();
 
   gtk_widget_show_all (main_window);
 }
