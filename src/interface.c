@@ -185,7 +185,8 @@ void game_set_pause(GtkWidget    *menuitem,
     }
   game_pause = !game_pause;
   if(game_pause) {
-    g_source_remove(timer);
+    g_source_remove (timer);
+    timer = 0;
     gtk_label_set_text (GTK_LABEL(Pause_button_label),pause_str[1]);
   }
   else {
@@ -222,8 +223,11 @@ void game_over_init()
 	gtk_widget_grab_default(Start_stop_button);
 	gtk_label_set_text (GTK_LABEL(Pause_button_label),pause_str[0]);
 	gtk_widget_set_sensitive(Pause_button,FALSE);
-	
-	g_source_remove(timer);
+
+	if (timer) {
+		g_source_remove (timer);
+		timer = 0;
+	}
 }
 
 void game_start_stop(GtkMenuItem     *widget,
