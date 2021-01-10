@@ -263,15 +263,15 @@ void show_about(GtkMenuItem *menuitem, gpointer user_data)
     {
         "1999-2000 Mattias Wadman",
         "2002-2006 Iavor Veltchev",
-        "2020      wdlkmpx (github)",
+        "2020-2021 wdlkmpx (github)",
         NULL
     };
     logo = gdk_pixbuf_new_from_xpm_data (tetris_xpm);
 
     w = g_object_new (GTK_TYPE_ABOUT_DIALOG,
-                      "version",      "v0.6.2",
+                      "version",      VERSION,
                       "program-name", "GTK Tetris",
-                      "copyright",    "Copyright (C) 1999-2020",
+                      "copyright",    "Copyright (C) 1999-2021",
                       "comments",     "Just another GTK Tetris",
                       "license",      "MIT - Permission is hereby granted, free of charge, \nto any person obtaining a copy of this software \nand associated documentation files (the \"Software\"), \nto deal in the Software without restriction, \nincluding without limitation the rights to use, \ncopy, modify, merge, publish, distribute, sublicense, \nand/or sell copies of the Software.... \n\nsee LICENSE file",
                       "website",      "https://github.com/wader/gtktetris",

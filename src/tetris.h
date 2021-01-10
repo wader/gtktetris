@@ -9,6 +9,14 @@
 #include "gtkcompat.h"
 #include <stdlib.h>
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#ifndef VERSION
+#define VERSION "v0.6.2"
+#endif
+
 #define MAX_X 10
 #define MAX_Y 18
 #define do_random(max) ( (int) ((max) * ((float)random() / RAND_MAX)) )
@@ -91,3 +99,4 @@ int addto_highscore(char *name,long score, int level, int lines);
 long get_hiscore (void);
 
 #endif
+
