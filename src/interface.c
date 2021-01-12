@@ -657,12 +657,12 @@ void create_main_window (void)
   
    gtk_window_add_accel_group (GTK_WINDOW (main_window), accel_group);
 
-   // set block size and game area size
-   update_block_size (1);
-
    read_highscore ();
    update_game_values ();
 
    gtk_widget_show_all (main_window);
+
+   // set block size and game area size
+   update_block_size (1);
 }
 

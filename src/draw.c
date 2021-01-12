@@ -22,7 +22,7 @@ static GdkPixbuf * blocks_pixbuf;
 
 
 // this is for set_block()
-//       block_style 2      palette N rbg
+//       block_style 2      palette N rgb
 static const int block_color_rgb[2][8][3] =
 {
    {
@@ -53,7 +53,6 @@ _cairo_resize_surface (cairo_surface_t ** in_surface, int new_width, int new_hei
 {
    cairo_t * new_cr;
    cairo_surface_t * out_surface;
-   cairo_format_t format;
    int in_w, in_h;
    double scale_x, scale_y;
 
@@ -67,8 +66,11 @@ _cairo_resize_surface (cairo_surface_t ** in_surface, int new_width, int new_hei
    }
 
    // create a surface with the desired width x height
-   format = cairo_image_surface_get_format (*in_surface);
-   out_surface = cairo_image_surface_create (format, new_width, new_height);
+   ///cairo_format_t format = cairo_image_surface_get_format (*in_surface);
+   ///out_surface = cairo_image_surface_create (format, new_width, new_height);
+   out_surface = gdk_window_create_similar_surface (gtk_widget_get_window (game_area),
+                                                    CAIRO_CONTENT_COLOR_ALPHA,
+                                                    new_width, new_height);
    new_cr  = cairo_create (out_surface);
 
    // determine scale_x and scale_y
