@@ -137,11 +137,15 @@ game_area_draw_cb (GtkWidget * widget, gpointer compat, gpointer user_data)
    {
 #if GTK_CHECK_VERSION (3, 0, 0)
       cairo_t * cr = (cairo_t *) compat;
+      GdkRectangle rect;
+      GdkRectangle * area = &rect;
+      gdk_cairo_get_clip_rectangle (cr, area);
 #else // gtk2
-      //GdkEventExpose * event = (GdkEventExpose *) compat;
+      GdkEventExpose * event = (GdkEventExpose *) compat;
       cairo_t * cr = gdk_cairo_create (gtk_widget_get_window (widget));
+      GdkRectangle * area = &(event->area);
 #endif
-      set_background_color (cr, widget);
+      set_background_color (cr, area);
 #if GTK_MAJOR_VERSION == 2
       cairo_destroy (cr);
 #endif
@@ -154,11 +158,15 @@ next_block_area_draw_cb (GtkWidget * widget, gpointer compat, gpointer user_data
 {
 #if GTK_CHECK_VERSION (3, 0, 0)
    cairo_t * cr = (cairo_t *) compat;
+   GdkRectangle rect;
+   GdkRectangle * area = &rect;
+   gdk_cairo_get_clip_rectangle (cr, area);
 #else // gtk2
-   //GdkEventExpose * event = (GdkEventExpose *) compat;
+   GdkEventExpose * event = (GdkEventExpose *) compat;
    cairo_t * cr = gdk_cairo_create (gtk_widget_get_window (widget));
+   GdkRectangle * area = &(event->area);
 #endif
-   set_background_color (cr, widget);
+   set_background_color (cr, area);
 #if GTK_MAJOR_VERSION == 2
    cairo_destroy (cr);
 #endif

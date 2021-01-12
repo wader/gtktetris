@@ -89,7 +89,7 @@ void game_set_pause();
 void load_tetris_blocks (const char ** source_blocks_pix);
 void free_tetris_blocks (void);
 void set_block(int x,int y,int color,int next);
-void set_background_color (cairo_t * cr, GtkWidget * widget);
+void set_background_color (cairo_t * cr, GdkRectangle * area);
 
 // highscore.c
 void read_highscore();

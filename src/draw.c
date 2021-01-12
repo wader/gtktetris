@@ -1,6 +1,6 @@
 /* 
  * draw on surfaces with Cairo 
- * - interface.c: provides cairo context and/or widget
+ * - interface.c: provides cairo context
  * - tetris.c   : calls set_block
  */
 
@@ -38,14 +38,12 @@ static const int block_color_rgb[2][8][3] =
 };
 
 
-void set_background_color (cairo_t * cr, GtkWidget * widget)
+void set_background_color (cairo_t * cr, GdkRectangle * area)
 {
-   int width  = gtk_widget_get_allocated_width (widget);
-   int height = gtk_widget_get_allocated_height (widget);
    cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
    cairo_rectangle (cr,
-                    0, 0,
-                    width, height);
+                    area->x, area->y,
+                    area->width, area->height);
    cairo_fill (cr);
 }
 
