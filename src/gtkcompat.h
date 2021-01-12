@@ -4,7 +4,7 @@
  * For more information, please refer to <https://unlicense.org>
  */
 
-/** 2020-12-17 **/
+/** 2021-01-12 **/
 
 /*
  * gtkcompat.h, GTK2+ compatibility layer
@@ -73,6 +73,16 @@ extern "C"
 // GLIB < 2.58
 #if ! GLIB_CHECK_VERSION (2, 58, 0)
 #define G_SOURCE_FUNC(f) ((GSourceFunc) (void (*)(void)) (f))
+#endif
+
+
+// GLIB < 2.40
+#if ! GLIB_CHECK_VERSION (2, 40, 0)
+#define g_key_file_save_to_file(kfile,filename,error) { \
+   char * data = g_key_file_to_data (kfile, NULL, error); \
+   g_file_set_contents (filename, data, -1, error); \
+   g_free (data); \
+}
 #endif
 
 
@@ -145,14 +155,42 @@ extern "C"
 
 
 
+/* ================================================== */
+/*                       GTK                          */
+/* ================================================== */
+
+// STOCK items work in GTK2/3 but not in GTK4
+#if GTK_MAJOR_VERSION >= 4
+#define GTKCOMPAT_STOCK_OK     "_OK"
+#define GTKCOMPAT_STOCK_CANCEL "_Cancel"
+#define GTKCOMPAT_STOCK_APPLY  "_Apply"
+#define GTKCOMPAT_STOCK_CLOSE  "_Close"
+#define GTKCOMPAT_STOCK_YES    "_Yes"
+#define GTKCOMPAT_STOCK_NO     "_No"
+#define GTKCOMPAT_STOCK_SAVE   "_Save"
+#define GTKCOMPAT_STOCK_QUIT   "_Quit"
+#define GTKCOMPAT_STOCK_OPEN   "_Open"
+#define GTKCOMPAT_STOCK_ABOUT  "_About"
+#else
+#define GTKCOMPAT_STOCK_OK     "gtk-ok"
+#define GTKCOMPAT_STOCK_CANCEL "gtk-cancel"
+#define GTKCOMPAT_STOCK_APPLY  "gtk-apply"
+#define GTKCOMPAT_STOCK_CLOSE  "gtk-close"
+#define GTKCOMPAT_STOCK_YES    "gtk-yes"
+#define GTKCOMPAT_STOCK_NO     "gtk-no"
+#define GTKCOMPAT_STOCK_SAVE   "gtk-save"
+#define GTKCOMPAT_STOCK_QUIT   "gtk-quit"
+#define GTKCOMPAT_STOCK_OPEN   "gtk-open"
+#define GTKCOMPAT_STOCK_ABOUT  "gtk-about"
+#endif
+
 
 /* ================================================== */
 /*                       GTK 3                        */
 /* ================================================== */
 
-
 // GTK >= 3.0 -- applies to GTK3, GTK4...
-#if GTK_CHECK_VERSION (3, 0, 0)
+#if GTK_MAJOR_VERSION >= 3
 #define GTKCOMPAT_DRAW_SIGNAL "draw"
 #define gtkcompat_widget_set_halign_left(w)   gtk_widget_set_halign(GTK_WIDGET(w), GTK_ALIGN_START)
 #define gtkcompat_widget_set_halign_center(w) gtk_widget_set_halign(GTK_WIDGET(w), GTK_ALIGN_CENTER)
@@ -180,19 +218,40 @@ extern "C"
 #endif
 
 
+// GTK < 3.10
+#if ! GTK_CHECK_VERSION (3, 10, 0)
+//#define gdk_window_create_similar_image_surface(gdksurf,format,width,height,scale)
+//        gdk_window_create_similar_surface(gdksurf,CAIRO_CONTENT_COLOR_ALPHA,width,height)
+#define gdk_window_create_similar_image_surface(gdksurf,format,width,height,scale) ({ \
+   cairo_t * wcr = gdk_cairo_create (gdksurf); \
+   cairo_surface_t * window_surface = cairo_get_target (wcr); \
+   cairo_surface_t * out_s = cairo_surface_create_similar (window_surface, CAIRO_CONTENT_COLOR_ALPHA, width, height); \
+   cairo_destroy (wcr); \
+   out_s; \
+})
+#endif
+
+
+// GTK < 3.8
+#if ! GTK_CHECK_VERSION (3, 8, 0)
+#define gtk_widget_set_opacity(w,o) gtk_window_set_opacity(GTK_WINDOW(w),o)
+#define gtk_widget_get_opacity(w)  (gtk_window_get_opacity(GTK_WINDOW(w))
+#endif
+
+
 // GTK < 3.4
 #if ! GTK_CHECK_VERSION (3, 4, 0)
 #define gtk_application_window_new(app) gtk_window_new(GTK_WINDOW_TOPLEVEL)
 #endif
 
 
+
 /* ================================================== */
 /*                       GTK 2                        */
 /* ================================================== */
 
-
-// GTK < 3.0
-#if ! GTK_CHECK_VERSION (3, 0, 0)
+// define some GTK3+ functions
+#if GTK_MAJOR_VERSION <= 2
 #define GTKCOMPAT_DRAW_SIGNAL "expose_event"
 #define gtk_box_new(ori,spacing) \
   ((ori == GTK_ORIENTATION_HORIZONTAL) ? gtk_hbox_new(FALSE,spacing) \
@@ -217,6 +276,10 @@ extern "C"
                                        : gtk_vpaned_new())
 #define gtk_widget_get_allocated_height(widget) (GTK_WIDGET(widget)->allocation.height )
 #define gtk_widget_get_allocated_width(widget)  (GTK_WIDGET(widget)->allocation.width  )
+#define gtk_combo_box_text_remove_all(cmb) { \
+   GtkTreeModel * model = gtk_combo_box_get_model (GTK_COMBO_BOX (cmb)); \
+   gtk_list_store_clear (GTK_LIST_STORE (model)); \
+}
 #define gtk_tree_model_iter_previous(model,iter) ({ \
    GtkTreePath * path = gtk_tree_model_get_path (model, iter); \
    gboolean valid = gtk_tree_path_prev (path); \
@@ -224,6 +287,7 @@ extern "C"
    gtk_tree_path_free (path); \
    valid; \
 })
+#define gtk_widget_override_font(w,f) gtk_widget_modify_font(w,f)
 #define gtkcompat_widget_set_halign_left(w)   gtk_misc_set_alignment(GTK_MISC(w), 0.0, 0.5)
 #define gtkcompat_widget_set_halign_center(w) gtk_misc_set_alignment(GTK_MISC(w), 0.5, 0.5)
 #define gtkcompat_widget_set_halign_right(w)  gtk_misc_set_alignment(GTK_MISC(w), 1.0, 0.5)
@@ -249,10 +313,13 @@ typedef struct _GtkComboBoxPrivate GtkComboBoxTextPrivate;
 #define gtk_combo_box_text_new() gtk_combo_box_new_text()
 #define gtk_combo_box_text_new_with_entry()	gtk_combo_box_entry_new_text()
 #define gtk_combo_box_text_append_text(combo,text) gtk_combo_box_append_text(combo,text)
-#define gtk_combo_box_text_insert_text(combox,pos,text) gtk_combo_box_insert_text(combox,pos,text)
+#define gtk_combo_box_text_insert_text(combo,pos,text) gtk_combo_box_insert_text(combo,pos,text)
 #define gtk_combo_box_text_prepend_text(combo,text) gtk_combo_box_prepend_text(combo,text)
 #define gtk_combo_box_text_remove(combo,pos) gtk_combo_box_remove_text(combo,pos)
-#define gtk_combo_box_text_get_active_text(combo) gtk_combo_box_get_active_text(combo)
+#define gtk_combo_box_text_get_active_text(combo) (gtk_combo_box_get_active_text(combo))
+#define gtk_combo_box_get_has_entry(combo) (0)
+#define gtk_combo_box_set_entry_text_column(combo,cl)
+#define gtk_combo_box_get_entry_text_column(combo) (0)
 #define gtk_range_get_round_digits(range) (GTK_RANGE(range)->round_digits)
 //#define gdk_window_get_visual(w)  (gdk_drawable_get_visual(GDK_DRAWABLE(w)))
 #define gdk_window_get_screen(w)  (gdk_drawable_get_screen(GDK_DRAWABLE(w)))
@@ -274,6 +341,13 @@ typedef struct _GtkComboBoxPrivate GtkComboBoxTextPrivate;
 #define gdk_visual_get_byte_order(visual) (GDK_VISUAL(visual)->byte_order)
 #define gdk_visual_get_colormap_size(visual) (GDK_VISUAL(visual)->colormap_size)
 #define gdk_visual_get_bits_per_rgb(visual) (GDK_VISUAL(visual)->bits_per_rgb)
+#define gdk_window_create_similar_surface(gdksurf,content,width,height) ({ \
+   cairo_t * wcr = gdk_cairo_create (gdksurf); \
+   cairo_surface_t * window_surface = cairo_get_target (wcr); \
+   cairo_surface_t * out_s = cairo_surface_create_similar (window_surface, content, width, height); \
+   cairo_destroy (wcr); \
+   out_s; \
+})
 #endif
 
 
@@ -370,9 +444,11 @@ typedef struct _GtkComboBoxPrivate GtkComboBoxTextPrivate;
 #	define GDK_KEY_Alt_R GDK_Alt_R
 #	define GDK_KEY_Alt_L GDK_Alt_L
 #	define GDK_KEY_Tab GDK_Tab
-#	define GDK_KEY_Up GDK_Up
 #	define GDK_KEY_space GDK_space
+#	define GDK_KEY_Up GDK_Up
 #	define GDK_KEY_Down GDK_Down
+#	define GDK_KEY_Right GDK_Right
+#	define GDK_KEY_Left GDK_Left
 #	define GDK_KEY_Return GDK_Return
 #	define GDK_KEY_exclam GDK_exclam
 #	define GDK_KEY_BackSpace GDK_BackSpace
