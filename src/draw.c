@@ -200,7 +200,22 @@ void set_block(int x,int y,int color,int next)
       gdkwin = gtk_widget_get_window (game_area);
    }
 
+#if GTK_CHECK_VERSION (3, 22, 0)
+   GdkDrawingContext * gdc;
+   cairo_region_t * region;
+   cairo_rectangle_int_t rect = { 
+      .x = x,
+      .y = y,
+      .width = BLOCK_WIDTH,
+      .height = BLOCK_HEIGHT
+   };
+   region = cairo_region_create_rectangle (&rect);
+   gdc = gdk_window_begin_draw_frame (gdkwin, region);
+   cairo_region_destroy (region);
+   cr = gdk_drawing_context_get_cairo_context (gdc);
+#else
    cr = gdk_cairo_create (gdkwin);
+#endif
 
    // need to avoid cairo_set_source_surface() as much as possible
    //   https://stackoverflow.com/questions/15773965/how-to-fast-redrawing-an-image-buffer
@@ -253,6 +268,10 @@ void set_block(int x,int y,int color,int next)
       cairo_stroke (cr);
    }
 
+#if GTK_CHECK_VERSION (3, 22, 0)
+   gdk_window_end_draw_frame (gdkwin, gdc);
+#else
    cairo_destroy (cr);
+#endif
 }
 
