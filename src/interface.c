@@ -470,9 +470,7 @@ void create_main_window (void)
                             gdk_pixbuf_new_from_xpm_data ((gchar const **)tetris_xpm));
    // window
    main_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-#if ! GTK_CHECK_VERSION (3, 0, 0)
-   gtk_window_set_policy(GTK_WINDOW(main_window),FALSE,FALSE,TRUE);
-#endif
+   gtk_window_set_resizable (GTK_WINDOW (main_window), FALSE);
    gtk_window_set_title(GTK_WINDOW(main_window),"GTK Tetris");
    gtk_window_set_icon_list(GTK_WINDOW(main_window),IconList);
    g_signal_connect (G_OBJECT (main_window), "key_press_event",
