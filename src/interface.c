@@ -465,18 +465,18 @@ void create_main_window (void)
 
    accel_group = gtk_accel_group_new();
   
-   GList *IconList=NULL;
-   IconList= g_list_append (IconList,
-                            gdk_pixbuf_new_from_xpm_data ((gchar const **)tetris_xpm));
    // window
    main_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
    gtk_window_set_resizable (GTK_WINDOW (main_window), FALSE);
    gtk_window_set_title(GTK_WINDOW(main_window),"GTK Tetris");
-   gtk_window_set_icon_list(GTK_WINDOW(main_window),IconList);
    g_signal_connect (G_OBJECT (main_window), "key_press_event",
                      G_CALLBACK (keyboard_event_handler), NULL);
    g_signal_connect (G_OBJECT (main_window), "destroy",
                      G_CALLBACK (main_window_destroy_cb), NULL);
+
+   GdkPixbuf * icon = gdk_pixbuf_new_from_xpm_data (tetris_xpm);
+   gtk_window_set_icon (GTK_WINDOW(main_window), icon);
+   g_object_unref (icon);
 
    // vertical box
    v_box = gtk_box_new (GTK_ORIENTATION_VERTICAL,0);
