@@ -23,10 +23,12 @@ static const char * block_sizes_str[] = {
    "16", "24", "32", "48", "64", "96", "128", NULL
 };
 
+
 /* returns a path that must be freed with g_free) */
 char * get_config_dir_file (const char * file)
 {
 #define EMPTY_STRING ""
+#define PROJECT_DIR "/gtktetris/"
    char * config_home = NULL;
    char * res = NULL;
    config_home = getenv ("XDG_CONFIG_HOME");
@@ -37,9 +39,9 @@ char * get_config_dir_file (const char * file)
       }
    }
    if (file) {
-      res = g_strconcat (config_home, "/gtktetris/", file, NULL);
+      res = g_strconcat (config_home, PROJECT_DIR, file, NULL);
    } else {
-      res = g_strconcat (config_home, "/gtktetris", NULL);
+      res = g_strconcat (config_home, PROJECT_DIR, NULL);
    }
    return (res);
 }
@@ -251,7 +253,7 @@ void options_show_dialog (void)
   // -------------
   // vbox -> frame
   frame = gtk_frame_new ("Level");
-  gtk_box_pack_start (GTK_BOX (vbox), frame, TRUE, TRUE, 2);
+  gtk_box_pack_start (GTK_BOX (vbox), frame, TRUE, TRUE, 0);
 
   // vbox -> frame -> vbox
   vbox_table = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
