@@ -4,7 +4,7 @@ A simple Tetris clone for the GTK library.
 
 ## Requirements
 
-- GTK 2.14+
+- GTK >= 2.14 / GTK 3
 
 ## Installation
 
@@ -15,9 +15,10 @@ Run
 - make
 - make install
 
-To build the GTK3 port:
+By default the GTK3 port is compiled, use `--enable-gtk2`
+or `--disable-gtk3` to compile the GTK2 port.
 
-- ./configure --prefix=/usr --enable-gtk3
+- ./configure --prefix=/usr --enable-gtk2
 
 The GTK3 version provides HiDPI support with:
 
