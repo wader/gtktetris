@@ -431,8 +431,7 @@ static void menu_settings_cb (GtkMenuItem *menuitem, gpointer user_data)
 
 static void main_window_destroy_cb (GtkWidget * w, gpointer   user_data)
 { // terminate application
-   free_tetris_blocks ();
-   gtk_main_quit ();
+   gtktetris_exit ();
 }
 
 void create_main_window (void)
@@ -466,7 +465,7 @@ void create_main_window (void)
    accel_group = gtk_accel_group_new();
   
    // window
-   main_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+   main_window = gtk_application_window_new (gtktetris_app);
    gtk_window_set_resizable (GTK_WINDOW (main_window), FALSE);
    gtk_window_set_title(GTK_WINDOW(main_window),"GTK Tetris");
    g_signal_connect (G_OBJECT (main_window), "key_press_event",

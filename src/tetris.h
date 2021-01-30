@@ -25,6 +25,7 @@
 #define MAX_Y 18
 #define do_random(max) ( (int) ((max) * ((float)random() / RAND_MAX)) )
 
+extern GtkApplication * gtktetris_app;
 extern int BLOCK_WIDTH;
 extern int BLOCK_HEIGHT;
 extern GtkWidget * main_window;
@@ -51,6 +52,7 @@ int next_frame;
 
 // main.c
 char * get_config_dir_file (const char * file);
+void gtktetris_exit (void);
 
 // options.c
 void options_defaults (void);

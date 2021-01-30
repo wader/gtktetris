@@ -8,6 +8,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+GtkApplication * gtktetris_app = NULL;
+
 
 #define P_DIR "games"
 char * get_config_dir_file (const char * file)
@@ -67,23 +69,50 @@ static void ensure_config_dir_exists (void)
 }
 
 
+// ======================================================================
+
+static void gtktetris_activate (void)
+{
+   // make sure config dir exists
+   ensure_config_dir_exists ();
+
+   // init game options
+   options_defaults ();
+   options_read ();
+
+   create_main_window ();
+}
+
+
+void gtktetris_exit (void)
+{
+   free_tetris_blocks ();
+   g_application_quit (G_APPLICATION (gtktetris_app));
+}
+
 
 int main (int argc, char *argv[])
 {
-  // Initialize gtk
-  gtk_init (&argc,&argv);
+   int status = 0;
 
-  // make sure config dir exists
-  ensure_config_dir_exists ();
+#if GTK_CHECK_VERSION (3, 4, 0)
+   gtktetris_app = gtk_application_new ("org.gtk.gtktetris", G_APPLICATION_FLAGS_NONE);
+   if (g_application_register (G_APPLICATION (gtktetris_app), NULL, NULL)) {
+      if (g_application_get_is_remote (G_APPLICATION (gtktetris_app))) {
+         gtktetris_exit ();
+         return 0;
+      }
+   }
+   g_signal_connect (gtktetris_app, "activate", gtktetris_activate, NULL);
+   status = g_application_run (G_APPLICATION (gtktetris_app), argc, argv);
+   g_object_unref (gtktetris_app);
+#else
+   // Initialize gtk
+   gtk_init (&argc,&argv);
+   gtktetris_activate ();
+   // main loop
+   gtk_main ();
+#endif
 
-  // init game options
-  options_defaults ();
-  options_read ();
-
-  create_main_window ();
-
-  // main loop
-  gtk_main ();
-
-  return (0);
+   return status;
 }
