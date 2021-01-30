@@ -17,6 +17,10 @@
 #define VERSION "v0.6.2"
 #endif
 
+#ifndef PACKAGE
+#define PACKAGE "gtktetris"
+#endif
+
 #define MAX_X 10
 #define MAX_Y 18
 #define do_random(max) ( (int) ((max) * ((float)random() / RAND_MAX)) )
@@ -45,8 +49,10 @@ int current_lines;
 int next_block;
 int next_frame;
 
-// options.c
+// main.c
 char * get_config_dir_file (const char * file);
+
+// options.c
 void options_defaults (void);
 void options_read(void);
 void options_show_dialog (void);
