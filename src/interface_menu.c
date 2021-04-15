@@ -1,4 +1,139 @@
 
+// ============================================================
+//                   GTK >= 3.10
+// ============================================================
+
+#if GTK_CHECK_VERSION (3, 10, 0)
+
+GSimpleAction * menuitem_game_start;
+GSimpleAction * menuitem_game_stop;
+GSimpleAction * menuitem_game_pause;
+GSimpleAction * menuitem_game_settings;
+
+
+static void menu_start (void)
+{
+   g_simple_action_set_enabled (menuitem_game_start,    FALSE);
+   g_simple_action_set_enabled (menuitem_game_stop,     TRUE );
+   g_simple_action_set_enabled (menuitem_game_pause,    TRUE );
+   g_simple_action_set_enabled (menuitem_game_settings, FALSE);
+}
+
+static void menu_stop (void)
+{
+   /* game_over_init() */
+   g_simple_action_set_enabled (menuitem_game_start,    TRUE );
+   g_simple_action_set_enabled (menuitem_game_stop,     FALSE);
+   g_simple_action_set_enabled (menuitem_game_pause,    FALSE);
+   g_simple_action_set_enabled (menuitem_game_settings, TRUE );
+   GVariant * false = g_variant_new_boolean (FALSE);
+   g_action_change_state (G_ACTION (menuitem_game_pause), false);
+}
+
+static void menu_set_pause (void)
+{
+   GVariant * new_state;
+   new_state = g_variant_new_boolean (game_pause ? FALSE : TRUE);
+   g_action_change_state (G_ACTION (menuitem_game_pause), new_state);
+
+   game_set_pause ();
+}
+
+
+static void on_menuitem_start_stop_activate_cb (GSimpleAction * menuitem, GVariant * param, gpointer user_data) {
+   game_start_stop ();
+}
+static void on_menuitem_pause_activate_cb (GSimpleAction * menuitem, GVariant * param, gpointer user_data) {
+   menu_set_pause ();
+}
+static void on_menuitem_settings_activate_cb (GSimpleAction * menuitem, GVariant * param, gpointer user_data) {
+   options_show_dialog ();
+}
+static void on_menuitem_quit_activate_cb (GSimpleAction * menuitem, GVariant * param, gpointer user_data) {
+   gtk_widget_destroy (GTK_WIDGET (main_window));
+}
+static void on_menuitem_help_activate_cb (GSimpleAction * menuitem, GVariant * param, gpointer user_data) {
+   show_help ();
+}
+static void on_menuitem_scores_activate_cb (GSimpleAction * menuitem, GVariant * param, gpointer user_data) {
+   show_highscore_dlg ();
+}
+static void on_menuitem_about_activate_cb (GSimpleAction * menuitem, GVariant * param, gpointer user_data) {
+   show_about ();
+}
+
+
+static void create_menu_bar (GtkApplicationWindow * window, GtkApplication * app)
+{
+   /* GtkApplicationWindow implements GActionMap */
+   GActionMap * amap = G_ACTION_MAP (window);
+
+   static const GActionEntry actions[] =
+   {  // name,      activate_callback,             param_type, state, change_state_callback
+      { "start",    on_menuitem_start_stop_activate_cb },
+      { "stop",     on_menuitem_start_stop_activate_cb },
+      { "pause",    on_menuitem_pause_activate_cb,     NULL, "false", }, // checkbox, default to false
+      { "settings", on_menuitem_settings_activate_cb   },
+      { "quit",     on_menuitem_quit_activate_cb       },
+      { "help",     on_menuitem_help_activate_cb       },
+      { "scores",   on_menuitem_scores_activate_cb     },
+      { "about",    on_menuitem_about_activate_cb      },
+   };
+   g_action_map_add_action_entries (amap, actions, G_N_ELEMENTS (actions), NULL);
+
+   menuitem_game_start = G_SIMPLE_ACTION (g_action_map_lookup_action (amap, "start"));
+   menuitem_game_stop  = G_SIMPLE_ACTION (g_action_map_lookup_action (amap, "stop"));
+   menuitem_game_pause = G_SIMPLE_ACTION (g_action_map_lookup_action (amap, "pause"));
+   menuitem_game_settings = G_SIMPLE_ACTION (g_action_map_lookup_action (amap, "settings"));
+
+   static const char * accel_start[]    = { "<Control>g", NULL };
+   static const char * accel_stop[]     = { "<Control>o", NULL };
+   static const char * accel_pause[]    = { "<Control>p", NULL };
+   static const char * accel_settings[] = { "<Control>s", NULL };
+   static const char * accel_quit[]     = { "<Control>q", NULL };
+   static const char * accel_help[]     = { "F1", NULL };
+   gtk_application_set_accels_for_action (app, "win.start",  accel_start);
+   gtk_application_set_accels_for_action (app, "win.stop",   accel_stop);
+   gtk_application_set_accels_for_action (app, "win.pause",  accel_pause);
+   gtk_application_set_accels_for_action (app, "win.settings", accel_settings);
+   gtk_application_set_accels_for_action (app, "win.quit",   accel_quit);
+   gtk_application_set_accels_for_action (app, "win.help",   accel_help);
+
+   GMenu * menubar   = g_menu_new ();
+   // Menu Game
+   GMenu * menu_game[4] = { g_menu_new(), g_menu_new(), g_menu_new(), g_menu_new() };
+   /* 0=menu 1-3=sections */
+   g_menu_append_submenu (menubar, "_Game", G_MENU_MODEL (menu_game[0]));
+   g_menu_append_section (menu_game[0], NULL, G_MENU_MODEL (menu_game[1]));
+   g_menu_append_section (menu_game[0], NULL, G_MENU_MODEL (menu_game[2]));
+   g_menu_append_section (menu_game[0], NULL, G_MENU_MODEL (menu_game[3]));
+   g_menu_append (menu_game[1], "Start Game", "win.start");
+   g_menu_append (menu_game[1], "Stop Game",  "win.stop");
+   g_menu_append (menu_game[1], "Pause",      "win.pause");
+   g_menu_append (menu_game[2], "Settings",   "win.settings");
+   g_menu_append (menu_game[3], "Quit",       "win.quit");
+
+   // Menu Help
+   GMenu * menu_help[4] = { g_menu_new(), g_menu_new(), g_menu_new(), g_menu_new() };
+   g_menu_append_submenu (menubar, "_Help", G_MENU_MODEL (menu_help[0]));
+   g_menu_append_section (menu_help[0], NULL, G_MENU_MODEL (menu_help[1]));
+   g_menu_append_section (menu_help[0], NULL, G_MENU_MODEL (menu_help[2]));
+   g_menu_append_section (menu_help[0], NULL, G_MENU_MODEL (menu_help[3]));
+   g_menu_append (menu_help[1], "_Help",       "win.help");
+   g_menu_append (menu_help[2], "_Top scores", "win.scores");
+   g_menu_append (menu_help[3], "_About",      "win.about");
+
+   gtk_application_set_menubar (app, G_MENU_MODEL (menubar));
+
+   menu_stop ();
+}
+
+
+#else
+// ============================================================
+//                   GTK < 3.10
+// ============================================================
+
 GtkWidget * menuitem_game_start;
 GtkWidget * menuitem_game_stop;
 GtkWidget * menuitem_game_pause;
@@ -171,3 +306,4 @@ static void create_menu_bar (GtkBox * box, GtkWindow * window)
    menu_stop ();
 }
 
+#endif

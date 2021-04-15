@@ -18,7 +18,11 @@ static void game_start_stop (void);
 static void menu_start (void);
 static void menu_stop (void);
 static void menu_set_pause (void);
+#if GTK_CHECK_VERSION (3, 10, 0)
+static void create_menu_bar (GtkApplicationWindow * window, GtkApplication * app);
+#else
 static void create_menu_bar (GtkBox * box, GtkWindow * window);
+#endif
 #include "interface_menu.c"
 
 #include "blocks.xpm"
@@ -451,10 +455,14 @@ void create_main_window (void)
    // vertical box
    v_box = gtk_box_new (GTK_ORIENTATION_VERTICAL,0);
    gtk_container_add(GTK_CONTAINER(main_window),v_box);
-  
+
    // menu bar
+#if GTK_CHECK_VERSION (3, 10, 0)
+   create_menu_bar (GTK_APPLICATION_WINDOW (main_window), gtktetris_app);
+#else
    create_menu_bar (GTK_BOX (v_box), GTK_WINDOW (main_window));
-  
+#endif
+
    // horizontal box
    h_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
    gtk_box_pack_start (GTK_BOX (v_box), h_box, FALSE, FALSE, 2);
