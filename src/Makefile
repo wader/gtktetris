@@ -14,7 +14,7 @@ LIBS   += $(GTK_LIBS)
 all: $(APP)
 
 $(APP): $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) -o $(APP) $(LDFLAGS) $(LIBS)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(OBJS) -o $(APP) $(LDFLAGS) $(LIBS)
 
 strip: $(APP)
 	$(STRIP) $(APP)
