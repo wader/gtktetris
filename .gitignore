@@ -22,3 +22,4 @@ src/gtktetris
 build-aux
 autoconf
 autoconf-m4
+config.mk
