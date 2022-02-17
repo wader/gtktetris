@@ -440,7 +440,7 @@ srcdir=.
 print_eval_var()
 {
 	zzvareval=
-	for i in $@ # perform up to evals
+	for i in $@ # perform up to 2 evals
 	do
 		zzvareval="$(eval echo $i)"
 		zzvareval="$(eval echo $zzvareval)"

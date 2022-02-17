@@ -4,13 +4,13 @@ A simple Tetris clone for the GTK library.
 
 ## Requirements
 
-- GTK >= 2.14 / GTK 3 >= 3.4
+- GTK 2 >= 2.14
+- GTK 3 >= 3.14
 
 ## Installation
 
 Run
 
-- ./autogen.sh
 - ./configure --prefix=/usr
 - make
 - make install
