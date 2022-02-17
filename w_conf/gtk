@@ -96,6 +96,7 @@ opt_configure_gtk()
 		--enable-gtk2)
 			enable_gtk3='no'
 			enable_gtk4='no'
+			enable_gtk2='check'
 			force_gtk2=yes
 			;;
 		--disable-gtk2)
@@ -104,6 +105,7 @@ opt_configure_gtk()
 		--enable-gtk3)
 			enable_gtk4='no'
 			enable_gtk2='no'
+			enable_gtk3='check'
 			force_gtk3=yes
 			;;
 		--disable-gtk3)
@@ -112,8 +114,8 @@ opt_configure_gtk()
 		--enable-gtk4)
 			enable_gtk3='no'
 			enable_gtk2='no'
+			enable_gtk4='check'
 			force_gtk4=yes
-			enable_gtk4=check
 			;;
 		--disable-gtk4)
 			enable_gtk4='no'

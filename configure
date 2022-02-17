@@ -145,7 +145,7 @@ set_cc()
 	fi
 	CC="$ZCC"
 	echo "$CC"
-	if [ -z "$CC_IS_FULL_PATH" ] ; then
+	if [ -n "$CC" ] && [ -z "$CC_IS_FULL_PATH" ] ; then
 		CC="$(basename $CC)" # not a full path, keep binary name
 	fi
 }
@@ -178,7 +178,7 @@ set_cxx()
 	fi
 	CXX="$ZXX"
 	echo "$CXX"
-	if [ -z "$CXX_IS_FULL_PATH" ] ; then
+	if [ -n "$CXX" ] && [ -z "$CXX_IS_FULL_PATH" ] ; then
 		CXX="$(basename $CXX)" # not a full path, keep binary name
 	fi
 }
@@ -423,16 +423,11 @@ bindir='${exec_prefix}/bin'
 sbindir='${exec_prefix}/sbin'
 libexecdir='${exec_prefix}/libexec'
 includedir='${prefix}/include'
-oldincludedir=/usr/include
 datarootdir='${prefix}/share'
 datadir='${datarootdir}'
 localstatedir='${prefix}/var'
 sysconfdir='${prefix}/etc'
 docdir='${datarootdir}/doc/${PACKAGE_TARNAME}'
-dvidir='${docdir}'
-htmldir='${docdir}'
-pdfdir='${docdir}'
-psdir='${docdir}'
 infodir='${datarootdir}/info'
 mandir='${datarootdir}/man'
 localedir='${datarootdir}/locale'
@@ -441,8 +436,17 @@ top_builddir="$(pwd)"
 top_srcdir="$(pwd)"
 builddir=.
 srcdir=.
-mkdir_p='mkdir -p'
-MKDIR_P='mkdir -p'
+
+print_eval_var()
+{
+	zzvareval=
+	for i in $@ # perform up to evals
+	do
+		zzvareval="$(eval echo $i)"
+		zzvareval="$(eval echo $zzvareval)"
+	done
+	echo "$zzvareval"
+}
 
 #==========================================================
 
@@ -478,17 +482,12 @@ Fine tuning of the installation directories:
   --runstatedir=DIR       modifiable per-process data [${runstatedir}]
   --libdir=DIR            object code libraries [${libdir}]
   --includedir=DIR        C header files [${includedir}]
-  --oldincludedir=DIR     C header files for non-gcc [${oldincludedir}]
   --datarootdir=DIR       read-only arch.-independent data root [${datarootdir}]
   --datadir=DIR           read-only architecture-independent data [${datadir}]
   --infodir=DIR           info documentation [${infodir}]
   --localedir=DIR         locale-dependent data [${localedir}]
   --mandir=DIR            man documentation [${mandir}]
   --docdir=DIR            documentation root [${docdir}]
-  --htmldir=DIR           html documentation [${htmldir}]
-  --dvidir=DIR            dvi documentation [${dvidir}]
-  --pdfdir=DIR            pdf documentation [${pdfdir}]
-  --psdir=DIR             ps documentation [${psdir}]
 
 $(print_optional_features)
 
@@ -578,10 +577,6 @@ do
 		--localstatedir=*) localstatedir="$(getvalue $i)" ;;
 		--sysconfdir=*)    sysconfdir="$(getvalue $i)"    ;;
 		--docdir=*)    docdir="$(getvalue $i)"   ;;
-		--dvidir=*)    dvidir="$(getvalue $i)"   ;;
-		--htmldir=*)   htmldir="$(getvalue $i)"  ;;
-		--pdfdir=*)    pdfdir="$(getvalue $i)"   ;;
-		--psdir=*)     psdir="$(getvalue $i)"    ;;
 		--infodir=*)   infodir="$(getvalue $i)"  ;;
 		--mandir=*)    mandir="$(getvalue $i)"   ;;
 		--localedir=*)   localedir="$(getvalue $i)"   ;;
@@ -592,6 +587,7 @@ do
 		--enable-static-link)  static_link=1 ;;
 		--disable-static-link) static_link=  ;;
 
+		---*) exit_error "Invalid opt: $i" ;;
 		-h|--help) help ;;
 	esac
 done
@@ -650,7 +646,9 @@ if test -n "$host" ; then
 	if [ -z "$CROSS_IS_FULL_PATH" ] ; then
 		# cross compiler is not a full path
 		CC="$(basename $CC)"
-		CXX="$(basename $CXX)"
+		if [ -n "$CXX" ] ; then
+			CXX="$(basename $CXX)"
+		fi
 	fi
 fi
 
@@ -767,10 +765,6 @@ datadir = ${datadir}
 localstatedir = ${localstatedir}
 sysconfdir = ${sysconfdir}
 docdir = ${docdir}
-dvidir = ${dvidir}
-htmldir = ${htmldir}
-pdfdir = ${pdfdir}
-psdir = ${psdir}
 infodir = ${infodir}
 mandir = ${mandir}
 localedir = ${localedir}
@@ -779,11 +773,18 @@ top_builddir = ${top_builddir}
 top_srcdir = ${top_srcdir}
 builddir = ${builddir}
 srcdir = ${srcdir}
-mkdir_p = ${mkdir_p}
-MKDIR_P = ${MKDIR_P}
 
 INSTALL = install -c
 INSTALL_DATA = install -c -m 644
+
+PACKAGE = ${PACKAGE}
+VERSION = ${VERSION}
+PACKAGE_URL = ${PACKAGE_URL}
+PACKAGE_NAME = ${PACKAGE_NAME}
+PACKAGE_STRING = ${PACKAGE_STRING}
+PACKAGE_TARNAME = ${PACKAGE_TARNAME}
+PACKAGE_BUGREPORT = ${PACKAGE_BUGREPORT}
+PACKAGE_VERSION = ${PACKAGE_VERSION}
 
 #=================================================
 ${make_extra_flags}
@@ -828,10 +829,15 @@ cat > config.h <<EOF
 #define PACKAGE_BUGREPORT "${PACKAGE_BUGREPORT}"
 #define PACKAGE_VERSION "${PACKAGE_VERSION}"
 
+#define PREFIX "$(print_eval_var $prefix)"
+#define DOCDIR "$(print_eval_var $docdir)"
+#define LOCALEDIR "$(print_eval_var $localedir)"
+#define DATADIR "$(print_eval_var $datadir)"
+#define SYSCONFDIR "$(print_eval_var $sysconfdir)"
+
 #ifndef _DARWIN_USE_64_BIT_INODE
 # define _DARWIN_USE_64_BIT_INODE 1
 #endif
-
 ${config_h_extra}
 EOF
 
@@ -854,8 +860,8 @@ if [ -n "${config_h_have}" ] ; then
 	) >> config.h
 fi
 
-echo "#endif /* __W_CONFIGURE_CONFIG_H__ */
-${w_config_h_extra_lines}" >> config.h
+echo "${w_config_h_extra_lines}
+#endif /* __W_CONFIGURE_CONFIG_H__ */" >> config.h
 
 #============================================================
 

@@ -8,7 +8,7 @@ PACKAGE_URL=''
 # Project type, use C to avoid checking for C++ compiler and stuff
 # it's possible to specify other values, but the behavior will be "undefined"
 # supported values: C, C++ ("" = C++)
-#PROJECT_TYPE=C
+PROJECT_TYPE=C
 
 # Use mktemp to produce temp files
 #W_USE_MKTEMP=1
