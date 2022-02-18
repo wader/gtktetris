@@ -54,6 +54,9 @@ int next_frame;
 char * get_config_dir_file (const char * file);
 void gtktetris_exit (void);
 
+// help.c
+void show_help (void);
+
 // options.c
 void options_defaults (void);
 void options_read(void);

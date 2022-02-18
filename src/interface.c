@@ -13,7 +13,6 @@
 #include "tetris.xpm" /* tetris_xpm */
 
 static void show_about (void);
-static void show_help (void);
 static void game_start_stop (void);
 static void menu_start (void);
 static void menu_stop (void);
@@ -296,75 +295,6 @@ static void show_about (void)
    g_signal_connect_swapped (w, "response",
                              G_CALLBACK (gtk_widget_destroy), w);
    gtk_widget_show_all (GTK_WIDGET (w));
-}
-
-
-static void show_help (void)
-{
-   GtkWidget *dialog, * help_label, * button;
-   GtkWidget *frame;
-   GtkWidget *hbox;
-   GtkWidget *vbox;
-
-   dialog = gtk_dialog_new ();
-   gtk_window_set_title (GTK_WINDOW (dialog), "Help");
-   gtk_window_set_transient_for (GTK_WINDOW (dialog), GTK_WINDOW (main_window));
-   gtk_window_set_position (GTK_WINDOW (dialog), GTK_WIN_POS_CENTER_ON_PARENT);
-   gtk_window_set_modal (GTK_WINDOW (dialog), TRUE);
-   gtk_window_set_resizable (GTK_WINDOW (dialog), FALSE);
-   gtk_window_set_skip_pager_hint (GTK_WINDOW (dialog), TRUE);
-   gtk_window_set_skip_taskbar_hint (GTK_WINDOW (dialog), TRUE);
-   gtk_container_set_border_width (GTK_CONTAINER (dialog), 3);
-   
-   vbox = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
-
-   frame = gtk_frame_new (NULL);
-   gtk_box_pack_start (GTK_BOX (vbox), frame, TRUE, TRUE, 0);
-
-   vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL,3);
-   gtk_container_add (GTK_CONTAINER (frame),vbox);
-
-   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL,30);
-   gtk_container_add(GTK_CONTAINER(vbox),hbox);
-
-   help_label = gtk_label_new(   "\nKeys:\n"
-               "Right and \"d\"\n"
-               "Left and \"a\"\n"
-               "\"s\"\n"
-               "Up and \"w\"\n"
-               "\"x\"\n"
-               "Space ans Down\n\n"
-               "Score: score*level\n"
-               "Single\n"
-               "Double\n"
-               "Triple\n"
-               "TETRIS\n\n"
-               "Drop bonus: rows*level\n");
-   gtkcompat_widget_set_halign_left (help_label);
-   gtk_label_set_justify (GTK_LABEL(help_label),GTK_JUSTIFY_LEFT);
-   gtk_box_pack_start (GTK_BOX(hbox),help_label,TRUE,TRUE,TRUE);
-
-   help_label = gtk_label_new (   "\n\n"
-               "move right\n"
-               "move left\n"
-               "move down\n"
-               "rotate ccw\n"
-               "rotate cw\n"
-               "drop block\n\n\n"
-               "40\n100\n"
-               "300\n1200\n");
-   gtkcompat_widget_set_halign_left (help_label);
-   gtk_label_set_justify (GTK_LABEL (help_label),GTK_JUSTIFY_LEFT);
-   gtk_box_pack_start (GTK_BOX(hbox), help_label, TRUE, TRUE, TRUE);
-
-   button = gtk_dialog_add_button (GTK_DIALOG (dialog), "gtk-close", GTK_RESPONSE_CLOSE);
-   gtk_widget_grab_focus (button);
-   
-   g_signal_connect_swapped (dialog, "response",
-                             G_CALLBACK (gtk_widget_destroy),
-                             (gpointer) dialog);
-
-   gtk_widget_show_all (dialog);
 }
 
 void update_block_size (int startup)
