@@ -4,7 +4,7 @@
  * For more information, please refer to <https://unlicense.org>
  */
 
-/** 2021-02-07 **/
+/** 2022-02-17 **/
 
 /*
  * gtkcompat.h, GTK2+ compatibility layer
@@ -153,36 +153,6 @@ extern "C"
 
 #endif /* __GLIB_COMPAT_H */
 
-
-
-/* ================================================== */
-/*                       GTK                          */
-/* ================================================== */
-
-// STOCK items work in GTK2/3 but not in GTK4
-#if GTK_MAJOR_VERSION >= 4
-#define GTKCOMPAT_STOCK_OK     "_OK"
-#define GTKCOMPAT_STOCK_CANCEL "_Cancel"
-#define GTKCOMPAT_STOCK_APPLY  "_Apply"
-#define GTKCOMPAT_STOCK_CLOSE  "_Close"
-#define GTKCOMPAT_STOCK_YES    "_Yes"
-#define GTKCOMPAT_STOCK_NO     "_No"
-#define GTKCOMPAT_STOCK_SAVE   "_Save"
-#define GTKCOMPAT_STOCK_QUIT   "_Quit"
-#define GTKCOMPAT_STOCK_OPEN   "_Open"
-#define GTKCOMPAT_STOCK_ABOUT  "_About"
-#else
-#define GTKCOMPAT_STOCK_OK     "gtk-ok"
-#define GTKCOMPAT_STOCK_CANCEL "gtk-cancel"
-#define GTKCOMPAT_STOCK_APPLY  "gtk-apply"
-#define GTKCOMPAT_STOCK_CLOSE  "gtk-close"
-#define GTKCOMPAT_STOCK_YES    "gtk-yes"
-#define GTKCOMPAT_STOCK_NO     "gtk-no"
-#define GTKCOMPAT_STOCK_SAVE   "gtk-save"
-#define GTKCOMPAT_STOCK_QUIT   "gtk-quit"
-#define GTKCOMPAT_STOCK_OPEN   "gtk-open"
-#define GTKCOMPAT_STOCK_ABOUT  "gtk-about"
-#endif
 
 
 /* ================================================== */
@@ -397,7 +367,6 @@ typedef struct _GtkComboBoxPrivate GtkComboBoxTextPrivate;
 
 // GTK < 2.16
 #if ! GTK_CHECK_VERSION (2, 16, 0)
-#define gtk_status_icon_set_tooltip_text(icon,text) gtk_status_icon_set_tooltip(icon,text)
 #define gtk_menu_item_get_label(i) (gtk_label_get_label (GTK_LABEL (GTK_BIN (i)->child)))
 #define gtk_menu_item_set_label(i,label) gtk_label_set_label(GTK_LABEL(GTK_BIN(i)->child), (label) ? label : "")
 #define gtk_menu_item_get_use_underline(i) (gtk_label_get_use_underline (GTK_LABEL (GTK_BIN (i)->child)))
@@ -441,6 +410,7 @@ typedef struct _GtkComboBoxPrivate GtkComboBoxTextPrivate;
 #	define GDK_KEY_Home GDK_Home
 #	define GDK_KEY_End GDK_End
 #	define GDK_KEY_Escape GDK_Escape
+#	define GDK_KEY_Delete GDK_Delete
 #	define GDK_KEY_a GDK_a
 #	define GDK_KEY_A GDK_A
 #	define GDK_KEY_b GDK_b
@@ -515,6 +485,7 @@ typedef struct _GtkComboBoxPrivate GtkComboBoxTextPrivate;
 #	define GDK_KEY_KP_Right GDK_KP_Right
 #	define GDK_KEY_KP_Up GDK_KP_Up
 #	define GDK_KEY_KP_Down GDK_KP_Down
+#	define GDK_KEY_KP_Delete GDK_KP_Delete
 #endif
 
 
