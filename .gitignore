@@ -23,3 +23,5 @@ build-aux
 autoconf
 autoconf-m4
 config.mk
+config.h
+config.sh
