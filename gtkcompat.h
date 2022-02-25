@@ -4,7 +4,7 @@
  * For more information, please refer to <https://unlicense.org>
  */
 
-/** 2022-02-17 **/
+/** 2022-02-22 **/
 
 /*
  * gtkcompat.h, GTK2+ compatibility layer
@@ -167,7 +167,10 @@ extern "C"
 #define gtkcompat_widget_set_halign_right(w)  gtk_widget_set_halign(GTK_WIDGET(w), GTK_ALIGN_END)
 #endif
 
-
+// GTK < 3.14
+#if (GTK_MAJOR_VERSION == 3 && !GTK_CHECK_VERSION(3, 14, 0))
+#error "GTK 3 < 3.14 should not be allowed"
+/*
 // GTK < 3.12
 #if ! GTK_CHECK_VERSION (3, 12, 0)
 #define gtk_application_set_accels_for_action(app,name,accels) \
@@ -175,35 +178,26 @@ extern "C"
 #define gtk_widget_set_margin_start(widget,margin) gtk_widget_set_margin_left(widget,margin)
 #define gtk_widget_set_margin_end(widget,margin)   gtk_widget_set_margin_right(widget,margin)
 #endif
-
-
-// GTK < 3.10
-#if GTK_CHECK_VERSION (3, 10, 0)
-// gdk_window_create_similar_image_surface() was removed in gtk4
-//                  only use gdk_window_create_similar_surface()
+*/
 #endif
-
-
-// GTK < 3.8
-#if ! GTK_CHECK_VERSION (3, 8, 0)
-#define gtk_widget_set_opacity(w,o) gtk_window_set_opacity(GTK_WINDOW(w),o)
-#define gtk_widget_get_opacity(w)  (gtk_window_get_opacity(GTK_WINDOW(w))
-#endif
-
-
-// GTK < 3.4
-#if ! GTK_CHECK_VERSION (3, 4, 0)
-#define gtk_application_window_new(app) gtk_window_new(GTK_WINDOW_TOPLEVEL)
-#endif
-
 
 
 /* ================================================== */
 /*                       GTK 2                        */
 /* ================================================== */
 
-// define some GTK3+ functions
+// define some GTK3.14+ functions
 #if GTK_MAJOR_VERSION <= 2
+// GTK < 3.10
+// gdk_window_create_similar_image_surface() was removed in gtk4
+//                  only use gdk_window_create_similar_surface()
+// < 3.8
+#define gtk_widget_set_opacity(w,o) gtk_window_set_opacity(GTK_WINDOW(w),o)
+#define gtk_widget_get_opacity(w)  (gtk_window_get_opacity(GTK_WINDOW(w))
+// < 3.4
+#define gtk_application_window_new(app) gtk_window_new(GTK_WINDOW_TOPLEVEL)
+// 3.0
+
 #define GTKCOMPAT_DRAW_SIGNAL "expose_event"
 #define gtk_box_new(ori,spacing) \
   ((ori == GTK_ORIENTATION_HORIZONTAL) ? gtk_hbox_new(FALSE,spacing) \
@@ -238,10 +232,18 @@ extern "C"
    gtk_tree_path_free (path); \
    valid; \
 })
+#define gtk_progress_bar_set_show_text(pb,show)
 #define gtk_widget_override_font(w,f) gtk_widget_modify_font(w,f)
 #define gtkcompat_widget_set_halign_left(w)   gtk_misc_set_alignment(GTK_MISC(w), 0.0, 0.5)
 #define gtkcompat_widget_set_halign_center(w) gtk_misc_set_alignment(GTK_MISC(w), 0.5, 0.5)
 #define gtkcompat_widget_set_halign_right(w)  gtk_misc_set_alignment(GTK_MISC(w), 1.0, 0.5)
+typedef enum /* GtkAlign */
+{
+  GTK_ALIGN_FILL,
+  GTK_ALIGN_START,
+  GTK_ALIGN_END,
+  GTK_ALIGN_CENTER
+} GtkAlign;
 /* GtkApplication */
 #define GtkApplication void
 #define g_application_quit(app) gtk_main_quit()
@@ -375,7 +377,9 @@ typedef struct _GtkComboBoxPrivate GtkComboBoxTextPrivate;
 
 
 // GTK < 2.14
-#if ! GTK_CHECK_VERSION (2, 14, 0)
+#if GTK_MAJOR_VERSION == 2 && !GTK_CHECK_VERSION(2, 14, 0)
+#error "GTK 2 < 2.14 should not be allowed"
+/* this is untested
 #define gtk_dialog_get_action_area(dialog)    (GTK_DIALOG(dialog)->action_area)
 #define gtk_dialog_get_content_area(dialog)   (GTK_DIALOG(dialog)->vbox)
 #define gtk_widget_get_window(widget)         (GTK_WIDGET(widget)->window)
@@ -384,6 +388,13 @@ typedef struct _GtkComboBoxPrivate GtkComboBoxTextPrivate;
 #define gtk_menu_get_accel_path(menu)         (GTK_MENU(menu)->accel_path)
 #define gtk_message_dialog_get_image(m)       (GTK_MESSAGE_DIALOG(m)->image)
 #define gtk_entry_get_overwrite_mode(e)       (GTK_ENTRY(e)->overwrite_mode)
+// ---
+#define gtk_adjustment_set_page_increment(a,val) ((a)->page_increment = (val))
+#define gtk_adjustment_get_page_size(a)       ((a)->page_size)
+#define gtk_adjustment_get_lower(a)           ((a)->lower)
+#define gtk_adjustment_get_upper(a)           ((a)->upper) // GTK_ADJUSTMENT
+#define gtk_selection_data_get_length(data)   ((data)->length)
+*/
 #endif
 
 
