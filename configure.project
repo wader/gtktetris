@@ -3,7 +3,7 @@
 # Project name and version
 PACKAGE="gtktetris"
 VERSION="0.6.2b"
-PACKAGE_URL=''
+PACKAGE_URL='https://github.com/wader/gtktetris'
 
 # Flags that will be used in all makefiles that compile code...
 PROJECT_CFLAGS='-Wall -g -O2' # -Wextra -Wno-unused-parameter -Wno-missing-field-initializers

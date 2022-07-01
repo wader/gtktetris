@@ -64,13 +64,13 @@ void options_show_dialog (void);
 
 struct Options
 {
-  int start_level;
-  int noise_level;
-  int noise_height;
-  int show_next_block;
-  int show_grid;
-  int block_size;
-  int block_style;
+    int start_level;
+    int noise_level;
+    int noise_height;
+    int show_next_block;
+    int show_grid;
+    int block_size;
+    int block_style;
 };
 
 struct Options options;
