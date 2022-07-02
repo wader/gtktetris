@@ -12,6 +12,9 @@
 #include "tetris.h"
 #include "tetris.xpm" /* tetris_xpm */
 
+#undef PACKAGE_NAME
+#define PACKAGE_NAME "GtkTetris"
+
 static void show_about (void);
 static void game_start_stop (void);
 static void menu_start (void);
@@ -276,14 +279,14 @@ static void show_about (void)
     {
         "1999-2000 Mattias Wadman",
         "2002-2006 Iavor Veltchev",
-        "2020-2021 wdlkmpx (github)",
+        "2020-2022 wdlkmpx (github)",
         NULL
     };
     logo = gdk_pixbuf_new_from_xpm_data (tetris_xpm);
 
     w = g_object_new (GTK_TYPE_ABOUT_DIALOG,
                       "version",      VERSION,
-                      "program-name", "GTK Tetris",
+                      "program-name", PACKAGE_NAME,
                       "copyright",    "Copyright (C) 1999-2021",
                       "comments",     "Just another GTK Tetris",
                       "license",      "MIT - Permission is hereby granted, free of charge, \nto any person obtaining a copy of this software \nand associated documentation files (the \"Software\"), \nto deal in the Software without restriction, \nincluding without limitation the rights to use, \ncopy, modify, merge, publish, distribute, sublicense, \nand/or sell copies of the Software.... \n\nsee LICENSE file",
