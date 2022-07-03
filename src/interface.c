@@ -86,21 +86,28 @@ gint keyboard_event_handler (GtkWidget *widget, GdkEventKey *event,
 
     switch (event->keyval)
     {
-        case GDK_KEY(x):
-        case GDK_KEY(X):
-            move_block(0,0,1);
-            event->keyval=0;
+        case GDK_KEY(Escape):
+            game_set_pause ();
             return TRUE;
             break;
         case GDK_KEY(w):
         case GDK_KEY(W):
         case GDK_KEY(Up):
+            move_block(0,0,1);
+            event->keyval=0;
+            return TRUE;
+            break;
+        case GDK_KEY(x):
+        case GDK_KEY(X):
+        case GDK_KEY(z):
+        case GDK_KEY(Z):
             move_block(0,0,-1); 
             event->keyval=0; 
             return TRUE;
             break;
         case GDK_KEY(s):
         case GDK_KEY(S):
+        case GDK_KEY(Down):
             move_down(); 
             event->keyval=0; 
             return TRUE;
@@ -120,7 +127,6 @@ gint keyboard_event_handler (GtkWidget *widget, GdkEventKey *event,
             return TRUE;
             break;
         case GDK_KEY(space):
-        case GDK_KEY(Down):
             while(move_down()) {
                 dropbonus++;
             }
