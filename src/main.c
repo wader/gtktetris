@@ -10,6 +10,20 @@
 
 GtkApplication * gtktetris_app = NULL;
 
+// global variables
+GtkWidget *game_area;
+GtkWidget *next_block_area;
+int game_over;
+int game_pause;
+int current_x;
+int current_y;
+int current_block;
+int current_frame;
+long current_score;
+int current_level;
+int current_lines;
+int next_block;
+int next_frame;
 
 #define P_DIR "games"
 char * get_config_dir_file (const char * file)

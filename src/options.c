@@ -23,6 +23,7 @@ static const char * block_sizes_str[] = {
     "16", "24", "32", "48", "64", "96", "128", NULL
 };
 
+struct Options options;
 
 void options_defaults (void)
 {
