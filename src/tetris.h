@@ -36,19 +36,19 @@ extern GtkWidget * main_window;
 #define START_LEVEL_VALUE 6 // Iavor
 
 // global variables
-GtkWidget *game_area;
-GtkWidget *next_block_area;
-int game_over;
-int game_pause;
-int current_x;
-int current_y;
-int current_block;
-int current_frame;
-long current_score;
-int current_level;
-int current_lines;
-int next_block;
-int next_frame;
+extern GtkWidget *game_area;
+extern GtkWidget *next_block_area;
+extern int game_over;
+extern int game_pause;
+extern int current_x;
+extern int current_y;
+extern int current_block;
+extern int current_frame;
+extern long current_score;
+extern int current_level;
+extern int current_lines;
+extern int next_block;
+extern int next_frame;
 
 // main.c
 char * get_config_dir_file (const char * file);
@@ -73,7 +73,7 @@ struct Options
     int block_style;
 };
 
-struct Options options;
+extern struct Options options;
 
 // tetris.c
 void draw_block(int x,int y,int block,int frame,int clear,int next);
